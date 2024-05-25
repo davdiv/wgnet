@@ -1,7 +1,7 @@
 {
 	"name": "wgnet",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"author": "DivDE <divde@musicociel.fr>",
 	"description": "Command-line tool and web server to simplify the management of a WireGuard network.",
