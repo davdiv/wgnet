@@ -1,0 +1,43 @@
+<script lang="ts">
+	import { faAdd, faDiagramProject, faSearch, faServer, faTag, faTags } from "@fortawesome/free-solid-svg-icons";
+	import FaIcon from "../generic/FaIcon.svelte";
+	import { createListNavigation } from "../lists/listNavigation";
+	import { addPeer, addTag } from "../requests";
+	import Link from "../router/Link.svelte";
+
+	const listNavigation = createListNavigation("a,input");
+
+	let peerName = "";
+	let tagName = "";
+
+	const onPeerSubmit = async () => {
+		await addPeer(peerName);
+	};
+
+	const onTagSubmit = async () => {
+		await addTag(tagName);
+	};
+</script>
+
+<div class="hero bg-base-200 -mt-16 pt-16 min-h-dvh">
+	<div class="hero-content text-center">
+		<div class="max-w-md">
+			<h1 class="text-5xl font-bold">wgnet</h1>
+			<p class="py-6">wgnet helps you manage your Wireguard network.</p>
+			<div class="flex flex-col gap-2" use:listNavigation>
+				<form class="flex gap-2 input input-ghost items-center" on:submit|preventDefault={onPeerSubmit}>
+					<FaIcon class="flex-none" icon={faServer} /><input placeholder="Peer name" class="flex-1 w-full" bind:value={peerName} />
+					<button type="submit" class="btn btn-sm btn-ghost flex-none" title="Create a peer"><FaIcon icon={faAdd} /></button>
+				</form>
+				<form class="flex gap-2 input input-ghost items-center" on:submit|preventDefault={onTagSubmit}>
+					<FaIcon class="flex-none" icon={faTag} /><input placeholder="Tag name" class="flex-1 w-full" bind:value={tagName} />
+					<button type="submit" class="btn btn-sm btn-ghost flex-none" title="Create a tag"><FaIcon icon={faAdd} /></button>
+				</form>
+				<Link href="/network" class="btn btn-ghost"><FaIcon icon={faDiagramProject} />Network</Link>
+				<Link href="/peers" class="btn btn-ghost"><FaIcon icon={faServer} />Peers</Link>
+				<Link href="/tags" class="btn btn-ghost"><FaIcon icon={faTags} />Tags</Link>
+				<Link href="/searchByTag" class="btn btn-ghost"><FaIcon icon={faSearch} />Search by tag</Link>
+			</div>
+		</div>
+	</div>
+</div>

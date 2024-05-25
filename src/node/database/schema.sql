@@ -1,0 +1,57 @@
+CREATE TABLE version (wgnetVersion TEXT NOT NULL);
+
+CREATE TABLE peers (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT UNIQUE NOT NULL,
+	description TEXT,
+	interfaceName TEXT,
+	listenPort INTEGER,
+	fwMark INTEGER,
+	publicKey BLOB,
+	privateKey BLOB
+);
+
+CREATE TABLE tags (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT UNIQUE NOT NULL,
+	description TEXT,
+	color TEXT
+);
+
+CREATE TABLE peerTags (
+	peer INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	tag INTEGER NOT NULL REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (peer, tag)
+);
+
+CREATE TABLE peerLinks (
+	peer1 INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	peer2 INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	presharedKey BLOB,
+	PRIMARY KEY (peer1, peer2),
+	CONSTRAINT checkPeerLink CHECK (peer1 < peer2)
+);
+
+CREATE TABLE peerIps (
+	peer INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	ip BLOB NOT NULL,
+	netmask INTEGER NOT NULL,
+	peerCondition TEXT,
+	PRIMARY KEY (peer, ip)
+);
+
+CREATE TABLE peerEndpoints (
+	peer INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	endpoint TEXT NOT NULL,
+	priority INTEGER NOT NULL,
+	peerCondition TEXT,
+	PRIMARY KEY (peer, endpoint)
+);
+
+CREATE TABLE peerAllowedIps (
+	peer INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	ip BLOB NOT NULL,
+	netmask INTEGER NOT NULL,
+	peerCondition TEXT,
+	PRIMARY KEY (peer, ip, netmask)
+);
