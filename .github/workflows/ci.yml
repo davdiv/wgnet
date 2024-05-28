@@ -19,3 +19,4 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run ci
+      - run: docker build -t docker.io/davdiv/wgnet:local .
