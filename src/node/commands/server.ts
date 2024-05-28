@@ -1,3 +1,5 @@
+import { readFile } from "fs/promises";
+import open from "open";
 import { Readline, createInterface as createReadline, type Interface as ReadlineInterface } from "readline/promises";
 import type { Writable } from "stream";
 import yargs from "yargs";
@@ -5,7 +7,6 @@ import { formatBase64, parse32BytesBase64 } from "../../common/keys";
 import type { Command } from "../command";
 import { generate32BytesKey } from "../keys";
 import { createServer } from "../routes";
-import open from "open";
 
 const askEncryptionKey = async (rl: ReadlineInterface, output: Writable, cursorControl: Readline, readonly: boolean) => {
 	cursorControl.cursorTo(0, 0);
@@ -60,11 +61,11 @@ export default (async (args) => {
 				default: 3000,
 			},
 			"database-key": {
-				describe: "32 bytes base64 encryption key for credentials in the database.",
+				describe: "Path to a file containing the 32 bytes base64 encryption key for credentials in the database.",
 				type: "string",
 			},
 			"jwt-key": {
-				describe: "32 bytes base64 secret key to sign and verify Json Web Tokens",
+				describe: "Path to a file containing the 32 bytes base64 secret key to sign and verify Json Web Tokens",
 				type: "string",
 			},
 			open: {
@@ -74,6 +75,8 @@ export default (async (args) => {
 			},
 		})
 		.strict().argv;
+	let databaseKey = params.databaseKey ? await readFile(params.databaseKey, "utf8") : null;
+	const jwtKey = params.jwtKey ? await readFile(params.jwtKey, "utf8") : null;
 	const closeController = new AbortController();
 	const exitHandler = async () => closeController.abort();
 	process.on("SIGINT", exitHandler);
@@ -86,15 +89,14 @@ export default (async (args) => {
 		exitHandler();
 	};
 	rl.on("SIGINT", closeHandler);
-	if (!params.databaseKey) {
-		params.databaseKey = await askEncryptionKey(rl, output, cursorControl, params.readonly);
+	if (!databaseKey) {
+		databaseKey = await askEncryptionKey(rl, output, cursorControl, params.readonly);
 	}
-	const jwtKey = params.jwtKey ? (parse32BytesBase64(params.jwtKey) as Buffer) : generate32BytesKey();
 	const server = createServer({
-		jwtKey,
+		jwtKey: jwtKey ? (parse32BytesBase64(jwtKey) as Buffer) : generate32BytesKey(),
 		databaseConfig: {
 			database: params.database,
-			secret: parse32BytesBase64(params.databaseKey),
+			secret: parse32BytesBase64(databaseKey),
 			readonly: params.readonly,
 		},
 	});
