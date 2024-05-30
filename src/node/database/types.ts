@@ -6,6 +6,7 @@ const typeNumber = { type: "number" };
 const typeStringOrNull = { type: ["string", "null"], default: null };
 const typeNumberOrNull = { type: ["number", "null"], default: null };
 const typePeerCondition = { type: ["string", "null"], default: null, format: "peerCondition" };
+const typeColorOrNull = { type: ["string", "null"], default: null, format: "color" };
 
 export interface DBPeer {
 	id: number;
@@ -57,7 +58,7 @@ export const dbTagKeySchema = {
 export const dbTagNonKeySchema = {
 	name: typeString,
 	description: typeStringOrNull,
-	color: typeStringOrNull,
+	color: typeColorOrNull,
 };
 export const dbTagSchema = {
 	...dbTagKeySchema,

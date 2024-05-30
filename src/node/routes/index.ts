@@ -10,6 +10,7 @@ import { fastifyDatabase } from "../database/fastify";
 import type { DatabaseConfig } from "../database/main";
 import { validatePeerCondition } from "../../common/peerConditions/validate";
 import { notFound } from "../notFound";
+import { validateColor } from "../../common/color";
 
 const allRoutes = Object.values(
 	import.meta.glob<FastifyPluginAsync>("./*.route.ts", {
@@ -31,6 +32,7 @@ export const createServer = ({ databaseConfig, jwtKey }: { databaseConfig: Datab
 			customOptions: {
 				formats: {
 					peerCondition: validatePeerCondition,
+					color: validateColor,
 				},
 			},
 		},

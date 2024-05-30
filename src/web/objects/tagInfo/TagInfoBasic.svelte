@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { faRotateLeft, faUpload } from "@fortawesome/free-solid-svg-icons";
+	import { faRotateLeft, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
 	import type { TagInfo } from "../../../node/database/requests/getAllTags";
 	import Collapse from "../../generic/Collapse.svelte";
 	import FaIcon from "../../generic/FaIcon.svelte";
@@ -41,6 +41,9 @@
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Color</span>
 			<input type="color" class="w-full" bind:value={tagEdit.color} />
+			{#if tagEdit.color != null}
+				<button type="button" class="btn btn-sm btn-ghost" on:click|preventDefault={() => (tagEdit.color = null)}><FaIcon icon={faXmark} /></button>
+			{/if}
 		</label>
 		<div class="flex gap-2 items-center justify-end">
 			<TagDisplay class="mx-3" tag={tagEdit} />

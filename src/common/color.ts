@@ -1,3 +1,7 @@
+const colorRegExp = /^#[0-9a-f]{6}$/i;
+
+export const validateColor = (color: string) => colorRegExp.test(color);
+
 export const oppositeColor = (color: string | null) => {
 	if (color) {
 		const r = parseInt(color.slice(1, 3), 16);

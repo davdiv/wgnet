@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TagInfo } from "../../node/database/requests/getAllTags";
-	import { oppositeColor } from "../color";
+	import { oppositeColor } from "../../common/color";
 
 	export let tag: TagInfo;
 </script>
