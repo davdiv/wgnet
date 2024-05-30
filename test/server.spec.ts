@@ -19,7 +19,10 @@ let cookies: Record<string, string>;
 beforeEach(async () => {
 	const tempDir = await mkTempDir();
 	server = createServer({
-		jwtKey: generate32BytesKey(),
+		authenticationConfig: {
+			type: "basic",
+			jwtKey: generate32BytesKey(),
+		},
 		databaseConfig: {
 			database: join(tempDir, "wgnet.db"),
 			secret: generate32BytesKey(),

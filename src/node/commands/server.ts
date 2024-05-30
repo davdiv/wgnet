@@ -60,6 +60,10 @@ export default (async (args) => {
 				type: "number",
 				default: 3000,
 			},
+			oidc: {
+				describe: "OpenID Connect json configuration file with authority, client_id and client_secret properties.",
+				type: "string",
+			},
 			"trust-proxy": {
 				describe: "Trust proxy headers.",
 				type: "boolean",
@@ -89,7 +93,7 @@ export default (async (args) => {
 				type: "string",
 			},
 			"jwt-key": {
-				describe: "Path to a file containing the 32 bytes base64 secret key to sign and verify Json Web Tokens",
+				describe: "Path to a file containing the 32 bytes base64 secret key to sign and verify Json Web Tokens (incompatible with --oidc).",
 				type: "string",
 			},
 			open: {
@@ -99,14 +103,18 @@ export default (async (args) => {
 			},
 		})
 		.strict().argv;
+	if (params.oidc && params.jwtKey) {
+		throw new Error("--oidc and --jwt-key cannot be specified at the same time");
+	}
+	if (params.httpsCertificate && !params.httpsKey) {
+		throw new Error("--https-key must be specified when specifying --https-certificate");
+	}
 	let databaseKey = params.databaseKey ? await readFile(params.databaseKey, "utf8") : null;
 	const jwtKey = params.jwtKey ? await readFile(params.jwtKey, "utf8") : null;
+	const oidc = params.oidc ? JSON.parse(await readFile(params.oidc, "utf8")) : null;
 	const publicUrl = params.publicUrl;
 	let https;
-	if (params.httpsCertificate || params.httpsKey) {
-		if (!params.httpsKey) {
-			throw new Error("--https-key must be specified when specifying --https-certificate");
-		}
+	if (params.httpsKey) {
 		const httpsKey = await readFile(params.httpsKey, "utf8");
 		const httpsCertificate = params.httpsCertificate ? await readFile(params.httpsCertificate, "utf8") : null;
 		https = {
@@ -135,7 +143,7 @@ export default (async (args) => {
 			https,
 			trustProxy: params.trustProxy,
 		},
-		jwtKey: jwtKey ? (parse32BytesBase64(jwtKey) as Buffer) : generate32BytesKey(),
+		authenticationConfig: oidc ? { type: "oidc", oidc, publicUrl } : { type: "basic", jwtKey: jwtKey ? (parse32BytesBase64(jwtKey) as Buffer) : generate32BytesKey() },
 		databaseConfig: {
 			database: params.database,
 			secret: parse32BytesBase64(databaseKey),
@@ -143,7 +151,7 @@ export default (async (args) => {
 		},
 	});
 	const address = await server.listen({ host: params.host, port: params.port, signal: closeController.signal });
-	const createConnectionURL = () => new URL(`/login/${server.jwt.sign({})}`, publicUrl ?? address).href;
+	const createConnectionURL = () => new URL(`/login/${oidc ? "" : server.jwt.sign({})}`, publicUrl ?? address).href;
 	const helpText = `The following commands are available:
 "url": Creates a new connection URL and display it.
 "open": Creates a new connection URL and open it in the default web brower.

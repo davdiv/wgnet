@@ -1,7 +1,6 @@
 import fastifyCompress from "@fastify/compress";
 import fastifyCookie from "@fastify/cookie";
 import fastifyHelmet from "@fastify/helmet";
-import fastifyJwt from "@fastify/jwt";
 import fastifyStatic from "@fastify/static";
 import type { FastifyPluginAsync } from "fastify";
 import fastify from "fastify";
@@ -12,6 +11,8 @@ import { validatePeerCondition } from "../../common/peerConditions/validate";
 import { fastifyDatabase } from "../database/fastify";
 import type { DatabaseConfig } from "../database/main";
 import { notFound } from "../notFound";
+import type { AuthenticationConfig } from "./authentication";
+import auth from "./authentication";
 
 export type ProtocolOptions = {
 	http2?: boolean;
@@ -35,7 +36,15 @@ export const routes = fastifyPlugin(async (fastify) => {
 	}
 });
 
-export const createServer = ({ databaseConfig, jwtKey, protocolOptions }: { databaseConfig: DatabaseConfig; jwtKey: Buffer; protocolOptions?: ProtocolOptions }) => {
+export const createServer = ({
+	databaseConfig,
+	authenticationConfig,
+	protocolOptions,
+}: {
+	databaseConfig: DatabaseConfig;
+	authenticationConfig: AuthenticationConfig;
+	protocolOptions?: ProtocolOptions;
+}) => {
 	const server = fastify({
 		...protocolOptions,
 		logger: true,
@@ -62,24 +71,9 @@ export const createServer = ({ databaseConfig, jwtKey, protocolOptions }: { data
 		preCompressed: true,
 	});
 	server.register(fastifyCompress);
-	const algorithm = "HS256";
 	server.register(fastifyCookie);
-	server.register(fastifyJwt, {
-		cookie: {
-			cookieName: "auth",
-			signed: false,
-		},
-		secret: jwtKey as Buffer,
-		sign: {
-			algorithm,
-			expiresIn: "10m",
-		},
-		verify: {
-			algorithms: [algorithm],
-			onlyCookie: true,
-		},
-	});
 	server.register(fastifyDatabase, databaseConfig);
+	server.register(auth, authenticationConfig);
 	server.register(routes);
 	server.register(
 		async (fastify) => {

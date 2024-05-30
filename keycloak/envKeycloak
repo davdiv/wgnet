@@ -1,0 +1,1 @@
+export WGNET_OIDC="$PWD/config.json"
