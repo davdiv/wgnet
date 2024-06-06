@@ -60,6 +60,30 @@ export default (async (args) => {
 				type: "number",
 				default: 3000,
 			},
+			"trust-proxy": {
+				describe: "Trust proxy headers.",
+				type: "boolean",
+				default: false,
+			},
+			"public-url": {
+				describe: "Public URL of the server.",
+				type: "string",
+			},
+			http2: {
+				describe: "Whether to enable HTTP/2",
+				type: "boolean",
+				default: false,
+			},
+			"https-key": {
+				describe:
+					"Path to a file in PEM format containing the private key(s) to be used by the HTTPS server. When specified, HTTPS is enabled. The corresponding certificate chain(s) must be provided either in the same file or in the file specified by --https-certificate.",
+				type: "string",
+			},
+			"https-certificate": {
+				describe:
+					"Path to a file in PEM format containing the certificate chain(s) to be used by the HTTPS server. If this option is specified, --https-key must also be specified to provide the corresponding key(s).",
+				type: "string",
+			},
 			"database-key": {
 				describe: "Path to a file containing the 32 bytes base64 encryption key for credentials in the database.",
 				type: "string",
@@ -77,6 +101,19 @@ export default (async (args) => {
 		.strict().argv;
 	let databaseKey = params.databaseKey ? await readFile(params.databaseKey, "utf8") : null;
 	const jwtKey = params.jwtKey ? await readFile(params.jwtKey, "utf8") : null;
+	const publicUrl = params.publicUrl;
+	let https;
+	if (params.httpsCertificate || params.httpsKey) {
+		if (!params.httpsKey) {
+			throw new Error("--https-key must be specified when specifying --https-certificate");
+		}
+		const httpsKey = await readFile(params.httpsKey, "utf8");
+		const httpsCertificate = params.httpsCertificate ? await readFile(params.httpsCertificate, "utf8") : null;
+		https = {
+			cert: httpsCertificate ?? httpsKey,
+			key: httpsKey,
+		};
+	}
 	const closeController = new AbortController();
 	const exitHandler = async () => closeController.abort();
 	process.on("SIGINT", exitHandler);
@@ -93,6 +130,11 @@ export default (async (args) => {
 		databaseKey = await askEncryptionKey(rl, output, cursorControl, params.readonly);
 	}
 	const server = createServer({
+		protocolOptions: {
+			http2: params.http2,
+			https,
+			trustProxy: params.trustProxy,
+		},
 		jwtKey: jwtKey ? (parse32BytesBase64(jwtKey) as Buffer) : generate32BytesKey(),
 		databaseConfig: {
 			database: params.database,
@@ -101,7 +143,7 @@ export default (async (args) => {
 		},
 	});
 	const address = await server.listen({ host: params.host, port: params.port, signal: closeController.signal });
-	const createConnectionURL = () => new URL(`/login/${server.jwt.sign({})}`, address).href;
+	const createConnectionURL = () => new URL(`/login/${server.jwt.sign({})}`, publicUrl ?? address).href;
 	const helpText = `The following commands are available:
 "url": Creates a new connection URL and display it.
 "open": Creates a new connection URL and open it in the default web brower.

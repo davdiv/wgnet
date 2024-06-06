@@ -1,16 +1,26 @@
+import fastifyCompress from "@fastify/compress";
+import fastifyCookie from "@fastify/cookie";
+import fastifyHelmet from "@fastify/helmet";
 import fastifyJwt from "@fastify/jwt";
 import fastifyStatic from "@fastify/static";
-import fastifyCookie from "@fastify/cookie";
-import fastifyCompress from "@fastify/compress";
 import type { FastifyPluginAsync } from "fastify";
 import fastify from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import { join } from "path";
+import { validateColor } from "../../common/color";
+import { validatePeerCondition } from "../../common/peerConditions/validate";
 import { fastifyDatabase } from "../database/fastify";
 import type { DatabaseConfig } from "../database/main";
-import { validatePeerCondition } from "../../common/peerConditions/validate";
 import { notFound } from "../notFound";
-import { validateColor } from "../../common/color";
+
+export type ProtocolOptions = {
+	http2?: boolean;
+	https?: {
+		cert: string;
+		key: string;
+	} | null;
+	trustProxy?: boolean;
+};
 
 const allRoutes = Object.values(
 	import.meta.glob<FastifyPluginAsync>("./*.route.ts", {
@@ -25,8 +35,9 @@ export const routes = fastifyPlugin(async (fastify) => {
 	}
 });
 
-export const createServer = ({ databaseConfig, jwtKey }: { databaseConfig: DatabaseConfig; jwtKey: Buffer }) => {
+export const createServer = ({ databaseConfig, jwtKey, protocolOptions }: { databaseConfig: DatabaseConfig; jwtKey: Buffer; protocolOptions?: ProtocolOptions }) => {
 	const server = fastify({
+		...protocolOptions,
 		logger: true,
 		ajv: {
 			customOptions: {
@@ -34,6 +45,14 @@ export const createServer = ({ databaseConfig, jwtKey }: { databaseConfig: Datab
 					peerCondition: validatePeerCondition,
 					color: validateColor,
 				},
+			},
+		},
+	});
+	server.register(fastifyHelmet, {
+		contentSecurityPolicy: {
+			useDefaults: false,
+			directives: {
+				"default-src": ["'self'"],
 			},
 		},
 	});
