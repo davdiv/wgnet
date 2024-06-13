@@ -11,22 +11,31 @@
 	import PeerInfoKey from "./PeerInfoKey.svelte";
 	import PeerInfoLinks from "./PeerInfoLinks.svelte";
 	import PeerInfoTags from "./PeerInfoTags.svelte";
+	import { PeerAccess, hasPeerAccess } from "../../../common/peerConditions/accessRights";
+	import { userInfo$ } from "../../data";
 
 	export let peer: PeerInfo;
+
+	$: canEdit = hasPeerAccess(peer, PeerAccess.WriteOwnConfig, $userInfo$.wgnet?.peerAccess);
 </script>
 
 <div class="flex flex-col p-3 gap-2">
 	<div class="flex gap-2 text-xl font-bold items-center">
 		<FaIcon icon={faServer} /><span class="grow">{peer.name}</span>
-		<button type="button" class="btn btn-sm btn-error" title="Remove peer" on:click={() => removePeer(peer.id, peer.name)}><FaIcon icon={faTrash} /><span class="hidden sm:inline">Remove</span></button
-		>
-		<Link class="btn btn-primary btn-sm text-sm" title="Export config" href={`/peers/${peer.id}/config`}><FaIcon icon={faFileExport} /><span class="hidden sm:inline">Export config</span></Link>
+		{#if hasPeerAccess(peer, PeerAccess.CreateDelete, $userInfo$.wgnet?.peerAccess)}
+			<button type="button" class="btn btn-sm btn-error" title="Remove peer" on:click={() => removePeer(peer.id, peer.name)}>
+				<FaIcon icon={faTrash} /><span class="hidden sm:inline">Remove</span>
+			</button>
+		{/if}
+		{#if hasPeerAccess(peer, PeerAccess.ReadFullConfig, $userInfo$.wgnet?.peerAccess)}
+			<Link class="btn btn-primary btn-sm text-sm" title="Export config" href={`/peers/${peer.id}/config`}><FaIcon icon={faFileExport} /><span class="hidden sm:inline">Export config</span></Link>
+		{/if}
 	</div>
-	<PeerInfoBasic {peer} />
+	<PeerInfoBasic {peer} {canEdit} />
 	<PeerInfoKey {peer} />
-	<PeerInfoAddresses {peer} />
-	<PeerInfoAllowedIPs {peer} />
-	<PeerInfoEndpoints {peer} />
+	<PeerInfoAddresses {peer} {canEdit} />
+	<PeerInfoAllowedIPs {peer} {canEdit} />
+	<PeerInfoEndpoints {peer} {canEdit} />
 	<PeerInfoLinks {peer} />
 	<PeerInfoTags {peer} />
 </div>

@@ -7,6 +7,7 @@
 	import PeerInfoAddressesItem from "./PeerInfoAddressesItem.svelte";
 
 	export let peer: PeerInfo;
+	export let canEdit: boolean;
 
 	let newAddress = "";
 	const addAddress = async () => {
@@ -26,12 +27,14 @@
 	<svelte:fragment slot="title">
 		<span class="flex-none">Addresses</span>
 		<span class="badge badge-primary">{peer.addresses.length}</span>
-		<form class="contents" on:submit|preventDefault={addAddress}><input class="input input-ghost w-full" placeholder="Add CIDR" bind:value={newAddress} /></form>
+		{#if canEdit}
+			<form class="contents" on:submit|preventDefault={addAddress}><input class="input input-ghost w-full" placeholder="Add CIDR" bind:value={newAddress} /></form>
+		{/if}
 	</svelte:fragment>
 	{#if peer.addresses.length > 0}
 		<div class="flex flex-col">
 			{#each peer.addresses as address}
-				<PeerInfoAddressesItem {peer} {address} />
+				<PeerInfoAddressesItem {peer} {address} {canEdit} />
 			{/each}
 		</div>
 	{:else}

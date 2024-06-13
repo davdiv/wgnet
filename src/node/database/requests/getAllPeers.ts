@@ -12,4 +12,6 @@ export interface PeerInfo extends StringifiedBinary<Omit<DBPeer, "privateKey" | 
 	allowedIps: Omit<StringifiedBinary<DBPeerAllowedIp>, "peer">[];
 }
 
-export default (statement: Statement) => (): PeerInfo[] => statement.all().map(postProcess);
+export default (statement: Statement) =>
+	({ requestPeerCondition }: { requestPeerCondition: string }): PeerInfo[] =>
+		statement.all({ requestPeerCondition }).map(postProcess);

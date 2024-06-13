@@ -1,9 +1,11 @@
 import { faPlusCircle, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import type { PeerInfo } from "../../node/database/requests/getAllPeers";
 import type { TagInfo } from "../../node/database/requests/getAllTags";
-import { allPeersByNameMap$, allPeersByPublicKeyMap$, allPeersFuse$, allTagsByNameMap$, allTagsFuse$ } from "../data";
+import { allPeersByNameMap$, allPeersByPublicKeyMap$, allPeersFuse$, allTagsByNameMap$, allTagsFuse$, userInfo$ } from "../data";
 import { createAutoCompleteLogic } from "../generic/autoCompleteLogic";
 import { addPeer, addTag } from "../requests";
+import { PeerAccess, getPeerCondition, hasPeerAccess } from "../../common/peerConditions/accessRights";
+import { evaluateCondition } from "../../common/peerConditions/evaluate";
 
 export interface ItemWithScore<T> {
 	item: T;
@@ -34,7 +36,21 @@ export const searchPeers = (searchText: string): ItemWithScore<PeerInfo>[] => {
 	}
 	return res;
 };
-export const searchPeersExclude = createExcludeVersion(searchPeers);
+
+export const searchPeersExclude = (exclude: number[], requestedAccess: PeerAccess) => {
+	const searchFn = createExcludeVersion(searchPeers)(exclude);
+	return (searchText: string) => {
+		let result = searchFn(searchText);
+		if (!searchText) {
+			return [];
+		}
+		if (result.length > 0) {
+			const peerCondition = getPeerCondition(requestedAccess, userInfo$().wgnet?.peerAccess);
+			result = result.filter(({ item }) => evaluateCondition(peerCondition, new Set(item.tags), item.id));
+		}
+		return result;
+	};
+};
 export const searchTags = (searchText: string): ItemWithScore<TagInfo>[] => (searchText ? (allTagsFuse$().search(searchText) as any) : []);
 export const searchTagsExclude = createExcludeVersion(searchTags);
 
@@ -70,27 +86,36 @@ getSuggestions$.set((searchText) => {
 	const res: SearchResult[] = [];
 	if (searchText) {
 		const lowerCaseSearchText = searchText.toLocaleLowerCase();
+		let userInfo;
 		if (!allPeersByNameMap$()[lowerCaseSearchText]) {
-			res.push({
-				type: "generic",
-				item: {
-					text: `Create a "${searchText}" peer`,
-					icon: faPlusCircle,
-					handler: addPeer.bind(null, searchText),
-				},
-				score: 0,
-			});
+			userInfo = userInfo$();
+			const defaultTags = userInfo.wgnet?.peerDefaultTags ?? [];
+			if (hasPeerAccess({ id: -1, tags: defaultTags }, PeerAccess.CreateDelete, userInfo.wgnet?.peerAccess))
+				res.push({
+					type: "generic",
+					item: {
+						text: `Create a "${searchText}" peer`,
+						icon: faPlusCircle,
+						handler: addPeer.bind(null, searchText, defaultTags),
+					},
+					score: 0,
+				});
 		}
 		if (!allTagsByNameMap$()[lowerCaseSearchText]) {
-			res.push({
-				type: "generic",
-				item: {
-					text: `Create a "${searchText}" tag`,
-					icon: faPlusCircle,
-					handler: addTag.bind(null, searchText),
-				},
-				score: 0,
-			});
+			if (!userInfo) {
+				userInfo = userInfo$();
+			}
+			if (userInfo.wgnet?.tagsAdmin) {
+				res.push({
+					type: "generic",
+					item: {
+						text: `Create a "${searchText}" tag`,
+						icon: faPlusCircle,
+						handler: addTag.bind(null, searchText),
+					},
+					score: 0,
+				});
+			}
 		}
 		res.push(
 			...searchPeers(searchText).map(

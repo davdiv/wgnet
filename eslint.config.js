@@ -26,6 +26,8 @@ export default [
 		},
 		rules: {
 			"svelte/no-at-html-tags": "off",
+			"prefer-const": ["error", { destructuring: "all" }],
+			"@typescript-eslint/prefer-literal-enum-member": ["error", { allowBitwiseExpressions: true }],
 			"@typescript-eslint/no-extra-non-null-assertion": "off",
 			"@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }],
 			"@typescript-eslint/explicit-module-boundary-types": "off",

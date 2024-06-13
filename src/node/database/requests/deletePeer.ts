@@ -1,4 +1,4 @@
 import type { DBPeerKey } from "../types";
 import { createRunStatementCheckChange } from "../utils";
 
-export default createRunStatementCheckChange<DBPeerKey>;
+export default createRunStatementCheckChange<DBPeerKey & { requestPeerCondition: string }>;

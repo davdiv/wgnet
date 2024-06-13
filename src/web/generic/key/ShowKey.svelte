@@ -6,7 +6,7 @@
 	import InputText from "../InputText.svelte";
 	const hiddenSecret = "*".repeat(44);
 
-	export let retrieveSecret: () => Promise<string | null>;
+	export let retrieveSecret: undefined | (() => Promise<string | null>) = undefined;
 	export let generateSecret: undefined | (() => void) = undefined;
 	export let removeSecret: undefined | (() => void) = undefined;
 	export let editSecret: undefined | (() => void) = undefined;
@@ -18,7 +18,7 @@
 	const onClick = () => {
 		if ($infoPromise$) {
 			$infoPromise$ = null;
-		} else {
+		} else if (retrieveSecret) {
 			$infoPromise$ = retrieveSecret();
 		}
 	};
@@ -30,7 +30,7 @@
 	<input type="password" class="w-full" value={hasSecret ? hiddenSecret : ""} readonly />
 {/if}
 <div class="join">
-	{#if hasSecret}
+	{#if hasSecret && retrieveSecret}
 		<button type="button" class="btn btn-sm btn-ghost join-item" on:click={onClick} title={$infoPromise$ ? "Hide key" : "Show key"}><FaIcon icon={$infoPromise$ ? faEyeSlash : faEye} /></button>
 	{/if}
 	{#if generateSecret}

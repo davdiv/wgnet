@@ -3,7 +3,30 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import fastifyJwtJwks from "fastify-jwt-jwks";
 import fastifyPlugin from "fastify-plugin";
 import { formatBase64 } from "../../common/keys";
+import { type PeerAccessRight, type PeerAccess, getPeerCondition, reduceRights, fullPeerReadAccess } from "../../common/peerConditions/accessRights";
 import { generate32BytesKey } from "../keys";
+
+export interface UserInfo {
+	exp?: number;
+	iat?: number;
+	wgnet?: {
+		tagsAdmin?: boolean;
+		peerAccess?: PeerAccessRight[];
+		peerDefaultTags?: number[];
+	};
+}
+
+declare module "fastify" {
+	interface FastifyRequest {
+		peerCondition: (requestedAccess: PeerAccess) => string;
+	}
+}
+
+declare module "@fastify/jwt" {
+	interface FastifyJWT {
+		payload: UserInfo;
+	}
+}
 
 export interface OIDCConfig {
 	authority: string;
@@ -22,14 +45,21 @@ export type AuthenticationConfig =
 			jwtKey: Buffer;
 	  };
 
-export const accessForbiddenError = () => {
-	const error = new Error("Access forbidden");
-	(error as any).statusCode = 403;
-	return error;
-};
+export const accessForbidden = (reply: FastifyReply) => reply.status(403).type("text/plain").send("Access forbidden");
 
 export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) => {
-	const accessForbidden = (reply: FastifyReply) => reply.status(403).type("text/plain").send("Access forbidden");
+	fastify.get("/api/user", async (request, reply) => {
+		let { peerAccess, tagsAdmin, ...wgnet } = request.user.wgnet ?? {};
+		if (fastify.database.readonly) {
+			peerAccess = reduceRights(fullPeerReadAccess, peerAccess);
+			tagsAdmin = false;
+		}
+		return reply.code(200).send({ wgnet: { ...wgnet, tagsAdmin, peerAccess } });
+	});
+	fastify.decorateRequest("peerCondition", function (requestedAccess) {
+		return JSON.stringify(getPeerCondition(requestedAccess, this.user.wgnet?.peerAccess));
+	});
+
 	if (authConfig.type === "oidc") {
 		const {
 			publicUrl,
@@ -66,7 +96,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 				throw new Error(`Error while fetching token: ${res.status} ${await res.text()}`);
 			}
 			const json = await res.json();
-			request.user = fastify.jwt.decode<any>(json.access_token);
+			request.user = fastify.jwt.decode(json.access_token)!;
 			if (json.refresh_token) {
 				reply.setCookie("auth_refresh", json.refresh_token, {
 					sameSite: "strict",
@@ -174,13 +204,13 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 					newCookie = true;
 				} else {
 					await request.jwtVerify();
-					newCookie = (request.user as any).exp * 1000 - Date.now() < 1000 * 60 * 5;
+					newCookie = request.user.exp! * 1000 - Date.now() < 1000 * 60 * 5;
 				}
 			} catch (error) {
 				return accessForbidden(reply);
 			}
 			if (newCookie) {
-				const payload = { ...(request.user as any) };
+				const payload = { ...request.user };
 				delete payload.exp;
 				delete payload.iat;
 				const cookie = fastify.jwt.sign(payload);

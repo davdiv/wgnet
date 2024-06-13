@@ -1,6 +1,7 @@
 import fastifyPlugin from "fastify-plugin";
 import { availableOutputFormats, formatConfig, outputFormatMimeType, type OutputFormat } from "../../common/wgConfig/format";
 import { notFound } from "../notFound";
+import { PeerAccess } from "../../common/peerConditions/accessRights";
 
 export default fastifyPlugin(async (fastify) => {
 	const { getPeerConfigPeers, getPeerConfig } = fastify.database.requests;
@@ -13,11 +14,11 @@ export default fastifyPlugin(async (fastify) => {
 	}>("/api/peers/:id/config/:format?", { schema: { params: { id: { type: "number" }, format: { type: "string" } } } }, async (request, reply) => {
 		const { id, format } = request.params;
 		if (format && !availableOutputFormats.includes(format)) {
-			throw notFound();
+			return Promise.reject(notFound());
 		}
-		const peerConfig = getPeerConfig(id);
+		const peerConfig = getPeerConfig({ id, requestPeerCondition: request.peerCondition(PeerAccess.ReadFullConfig) });
 		if (!peerConfig) {
-			throw notFound();
+			return Promise.reject(notFound());
 		}
 		const { tags, ...res } = peerConfig;
 		const peers = getPeerConfigPeers(id, tags);

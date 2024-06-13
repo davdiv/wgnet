@@ -23,6 +23,12 @@ export const isTagCondition = (peerCondition: PeerCondition): peerCondition is T
 export const isPeerIdCondition = (peerCondition: PeerCondition): peerCondition is PeerIdCondition => peerCondition[0] === SimpleConditionType.PeerId;
 export const isSimpleCondition = (peerCondition: PeerCondition): peerCondition is SimpleCondition => isTagCondition(peerCondition) || isPeerIdCondition(peerCondition);
 
+export const pcPeerId = (peerId: number): PeerCondition => [SimpleConditionType.PeerId, peerId];
+export const pcTag = (tag: number): PeerCondition => [SimpleConditionType.Tag, tag];
+export const pcAnd = (...peerConditions: PeerCondition[]): PeerCondition => [ComposedConditionType.And, ...peerConditions];
+export const pcOr = (...peerConditions: PeerCondition[]): PeerCondition => [ComposedConditionType.Or, ...peerConditions];
+export const pcNot = (peerCondition: PeerCondition): PeerCondition => [ComposedConditionType.Not, peerCondition];
+
 export const evaluateCondition = (peerCondition: PeerCondition, peerTags: Set<number>, peerId: number): boolean => {
 	switch (peerCondition[0]) {
 		case SimpleConditionType.PeerId:
@@ -48,11 +54,17 @@ export const evaluateCondition = (peerCondition: PeerCondition, peerTags: Set<nu
 	}
 };
 
-export const matchPeerCondition = (strPeerCondition: string | null, strPeerTags: string, peerId: number) => {
-	if (!strPeerCondition) {
+export const peerConditionAlwaysTrue = JSON.stringify([ComposedConditionType.And]);
+export const peerConditionAlwaysFalse = JSON.stringify([ComposedConditionType.Or]);
+
+export const matchPeerCondition = (strPeerCondition: string | null, strPeerTags: string | null, peerId: number) => {
+	if (!strPeerCondition || strPeerCondition === peerConditionAlwaysTrue) {
 		return 1;
 	}
+	if (strPeerCondition === peerConditionAlwaysFalse) {
+		return 0;
+	}
 	const peerCondition: PeerCondition = JSON.parse(strPeerCondition);
-	const peerTags = new Set<number>(JSON.parse(strPeerTags));
+	const peerTags = new Set<number>(JSON.parse(strPeerTags ?? "[]"));
 	return evaluateCondition(peerCondition, peerTags, peerId) ? 1 : 0;
 };

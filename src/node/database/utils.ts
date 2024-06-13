@@ -24,9 +24,3 @@ export const createRunStatementCheckChange =
 			throw notFound();
 		}
 	};
-
-export const createRunStatement =
-	<T>(statement: Statement) =>
-	(item: T) => {
-		statement.run(item);
-	};

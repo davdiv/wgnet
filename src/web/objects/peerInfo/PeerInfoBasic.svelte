@@ -12,7 +12,10 @@
 		peerEdit = { ...peer };
 	};
 	export let peer: PeerInfo;
+	export let canEdit: boolean;
 	$: editPeer(peer);
+
+	$: readonly = !canEdit;
 </script>
 
 <Collapse>
@@ -28,35 +31,37 @@
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Name</span>
-			<InputText class="w-full" bind:value={peerEdit.name} />
+			<InputText class="w-full" bind:value={peerEdit.name} {readonly} />
 		</label>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost h-auto flex flex-col p-0">
 			<span class="font-bold flex-none px-4 pb-1">Description</span>
-			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={peerEdit.description} /></label
+			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={peerEdit.description} {readonly} /></label
 		>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Interface name</span>
-			<InputText class="w-full" bind:value={peerEdit.interfaceName} placeholder="wg0" />
+			<InputText class="w-full" bind:value={peerEdit.interfaceName} placeholder="wg0" {readonly} />
 		</label>
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Listen port</span>
-			<input type="number" class="w-full" bind:value={peerEdit.listenPort} placeholder="0" />
+			<input type="number" class="w-full" bind:value={peerEdit.listenPort} placeholder="0" {readonly} />
 		</label>
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Firewall mark</span>
-			<input type="number" class="w-full" bind:value={peerEdit.fwMark} placeholder="none" />
+			<input type="number" class="w-full" bind:value={peerEdit.fwMark} placeholder="none" {readonly} />
 		</label>
-		<div class="flex gap-2 justify-end">
-			<button type="submit" class="btn btn-sm btn-primary"><FaIcon icon={faUpload} />Save</button>
-			<button
-				type="button"
-				class="btn btn-sm btn-secondary"
-				on:click={() => {
-					editPeer(peer);
-				}}><FaIcon icon={faRotateLeft} />Reset</button
-			>
-		</div>
+		{#if !readonly}
+			<div class="flex gap-2 justify-end">
+				<button type="submit" class="btn btn-sm btn-primary"><FaIcon icon={faUpload} />Save</button>
+				<button
+					type="button"
+					class="btn btn-sm btn-secondary"
+					on:click={() => {
+						editPeer(peer);
+					}}><FaIcon icon={faRotateLeft} />Reset</button
+				>
+			</div>
+		{/if}
 	</form>
 </Collapse>

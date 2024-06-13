@@ -4,6 +4,8 @@
 	import { getPeerLinkPresharedKey, upsertPeerLink } from "../requests";
 
 	export let linkId: string;
+	export let canEdit: boolean;
+	export let canViewKey: boolean;
 
 	$: linkInfo = $allPeerLinksMap$[linkId];
 </script>
@@ -12,11 +14,11 @@
 	<span class="font-bold flex-none">Preshared key</span>
 	{#key linkInfo}
 		<KeyField
-			retrieveSecret={() => getPeerLinkPresharedKey(linkId)}
-			generateSecret={() => upsertPeerLink(linkId, "generate")}
-			removeSecret={() => upsertPeerLink(linkId, null)}
+			retrieveSecret={canViewKey ? () => getPeerLinkPresharedKey(linkId) : undefined}
+			generateSecret={canEdit ? () => upsertPeerLink(linkId, "generate") : undefined}
+			removeSecret={canEdit ? () => upsertPeerLink(linkId, null) : undefined}
 			hasSecret={!!linkInfo.hasPSK}
-			updateKey={(value) => upsertPeerLink(linkId, value)}
+			updateKey={canEdit ? (value) => upsertPeerLink(linkId, value) : undefined}
 		/>
 	{/key}
 </div>

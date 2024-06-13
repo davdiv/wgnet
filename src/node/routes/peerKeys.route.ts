@@ -3,6 +3,7 @@ import fastifyPlugin from "fastify-plugin";
 import type { DBPeerKey, DBPeerLinkKey, StringifiedBinary } from "../database/types";
 import { dbPeerKeySchema, dbPeerLinkKeySchema, dbPeerSchema } from "../database/types";
 import { derivePublicKey, extractKey, generateKeys, parsePrivateKey, parsePublicKey } from "../keys";
+import { PeerAccess } from "../../common/peerConditions/accessRights";
 
 export default fastifyPlugin(async (fastify) => {
 	const { setPeerKeys, getPeerPrivateKey, getPeerLinkPresharedKey } = fastify.database.requests;
@@ -16,7 +17,7 @@ export default fastifyPlugin(async (fastify) => {
 				params: dbPeerKeySchema,
 			},
 		},
-		async (request, reply) => reply.status(200).send(getPeerPrivateKey(request.params)),
+		async (request, reply) => reply.status(200).send(getPeerPrivateKey({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.ReadPrivateKey) })),
 	);
 
 	fastify.post<{
@@ -44,6 +45,7 @@ export default fastifyPlugin(async (fastify) => {
 				...request.params,
 				publicKey: extractKey(publicKey),
 				privateKey: extractKey(privateKey),
+				requestPeerCondition: request.peerCondition(PeerAccess.WritePrivateKey),
 			});
 			return reply.status(204).send();
 		},
@@ -66,6 +68,7 @@ export default fastifyPlugin(async (fastify) => {
 				...request.params,
 				publicKey: strPublicKey ? extractKey(parsePublicKey(strPublicKey)) : null,
 				privateKey: null,
+				requestPeerCondition: request.peerCondition(PeerAccess.WritePublicKey),
 			});
 			return reply.status(204).send();
 		},
@@ -80,6 +83,6 @@ export default fastifyPlugin(async (fastify) => {
 				params: dbPeerLinkKeySchema,
 			},
 		},
-		async (request, reply) => reply.status(200).send(getPeerLinkPresharedKey(request.params)),
+		async (request, reply) => reply.status(200).send(getPeerLinkPresharedKey({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.ReadLinkKey) })),
 	);
 });

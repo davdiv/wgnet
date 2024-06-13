@@ -4,6 +4,7 @@ import { Readline, createInterface as createReadline, type Interface as Readline
 import type { Writable } from "stream";
 import yargs from "yargs";
 import { formatBase64, parse32BytesBase64 } from "../../common/keys";
+import { fullPeerAdminRights } from "../../common/peerConditions/accessRights";
 import type { Command } from "../command";
 import { generate32BytesKey } from "../keys";
 import { createServer } from "../routes";
@@ -151,7 +152,20 @@ export default (async (args) => {
 		},
 	});
 	const address = await server.listen({ host: params.host, port: params.port, signal: closeController.signal });
-	const createConnectionURL = () => new URL(`/login/${oidc ? "" : server.jwt.sign({})}`, publicUrl ?? address).href;
+	const createConnectionURL = () =>
+		new URL(
+			`/login/${
+				oidc
+					? ""
+					: server.jwt.sign({
+							wgnet: {
+								peerAccess: [fullPeerAdminRights],
+								tagsAdmin: true,
+							},
+						})
+			}`,
+			publicUrl ?? address,
+		).href;
 	const helpText = `The following commands are available:
 "url": Creates a new connection URL and display it.
 "open": Creates a new connection URL and open it in the default web brower.

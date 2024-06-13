@@ -4,6 +4,7 @@
 
 	export let value: string | null;
 	export let autofocus = false;
+	export let readonly = false;
 
 	const value$ = writable(value);
 	const binding$ = transformNull(value$);
@@ -13,4 +14,4 @@
 	$: toModel($value$);
 </script>
 
-<textarea {...$$restProps} bind:value={$binding$} use:enableAutofocus={autofocus} />
+<textarea {...$$restProps} bind:value={$binding$} use:enableAutofocus={autofocus} {readonly} />

@@ -75,6 +75,7 @@ export const openDatabase = (options: DatabaseConfig) => {
 	}
 
 	return {
+		readonly: db.readonly,
 		requests: Object.fromEntries(
 			sqlRequests.map(([entry, value]) => {
 				const prepare = db.prepare(value);

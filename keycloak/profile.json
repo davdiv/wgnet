@@ -1,0 +1,69 @@
+{
+	"attributes": [
+		{
+			"name": "username",
+			"displayName": "${username}",
+			"validations": {
+				"length": {
+					"min": 3,
+					"max": 255
+				},
+				"username-prohibited-characters": {},
+				"up-username-not-idn-homograph": {}
+			},
+			"permissions": {
+				"view": ["admin", "user"],
+				"edit": ["admin", "user"]
+			},
+			"multivalued": false
+		},
+		{
+			"name": "email",
+			"displayName": "${email}",
+			"validations": {
+				"email": {},
+				"length": {
+					"max": 255
+				}
+			},
+			"permissions": {
+				"view": ["admin", "user"],
+				"edit": ["admin", "user"]
+			},
+			"multivalued": false
+		},
+		{
+			"name": "wgnetPeerAccessRights",
+			"displayName": "Peer access rights",
+			"permissions": {
+				"view": ["admin"],
+				"edit": ["admin"]
+			},
+			"group": "wgnet",
+			"multivalued": false
+		},
+		{
+			"name": "wgnetPeerDefaultTags",
+			"displayName": "Peer default tags",
+			"permissions": {
+				"view": ["admin"],
+				"edit": ["admin"]
+			},
+			"group": "wgnet",
+			"multivalued": false
+		}
+	],
+	"groups": [
+		{
+			"name": "user-metadata",
+			"displayHeader": "User metadata",
+			"displayDescription": "Attributes, which refer to user metadata"
+		},
+		{
+			"name": "wgnet",
+			"displayHeader": "wgnet attributes",
+			"displayDescription": "",
+			"annotations": {}
+		}
+	]
+}

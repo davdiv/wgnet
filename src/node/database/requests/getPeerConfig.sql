@@ -12,6 +12,8 @@ FROM
 	peers as peer
 	LEFT JOIN peerIps as ip ON peer.id = ip.peer
 WHERE
-	peer.id = ?
+	peer.id = @id
 GROUP BY
 	peer.id
+HAVING
+	matchPeerCondition (@requestPeerCondition, tags, @id)

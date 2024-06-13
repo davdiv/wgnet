@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { faEdit, faTrash, faWarning } from "@fortawesome/free-solid-svg-icons";
+	import { PeerAccess, hasPeerAccess } from "../../../common/peerConditions/accessRights";
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
+	import { userInfo$ } from "../../data";
 	import Collapse from "../../generic/Collapse.svelte";
 	import FaIcon from "../../generic/FaIcon.svelte";
 	import EditKey from "../../generic/key/EditKey.svelte";
 	import ShowKey from "../../generic/key/ShowKey.svelte";
 	import { getPeerPrivateKey, setPeerPrivateKey, setPeerPublicKey } from "../../requests";
 	import PeerKeyInfoIcon from "../PeerKeyInfoIcon.svelte";
+
 	export let peer: PeerInfo;
 
 	let editKeys: null | "public" | "private" = null;
@@ -35,20 +38,22 @@
 			<span class="font-bold flex-none">Private key</span>
 			{#key peer}
 				<ShowKey
-					retrieveSecret={() => getPeerPrivateKey(peer.id)}
-					generateSecret={() => setPeerPrivateKey(peer.id, null, peer.name)}
+					retrieveSecret={hasPeerAccess(peer, PeerAccess.ReadPrivateKey, $userInfo$.wgnet?.peerAccess) ? () => getPeerPrivateKey(peer.id) : undefined}
+					generateSecret={hasPeerAccess(peer, PeerAccess.WritePrivateKey, $userInfo$.wgnet?.peerAccess) ? () => setPeerPrivateKey(peer.id, null, peer.name) : undefined}
 					hasSecret={!!peer.hasPrivateKey}
-					editSecret={() => editKeysClick("private")}
+					editSecret={hasPeerAccess(peer, PeerAccess.WritePrivateKey, $userInfo$.wgnet?.peerAccess) ? () => editKeysClick("private") : undefined}
 				/>
 			{/key}
 		</div>
 		<div class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Public key</span>
 			<input type="text" class="w-full" value={peer.publicKey} readonly />
-			<div class="join">
-				<button type="button" class="btn btn-sm btn-ghost join-item" title="Remove key" on:click={() => setPeerPublicKey(peer.id, null, peer.name)}><FaIcon icon={faTrash} /></button>
-				<button type="button" class="btn btn-sm btn-ghost join-item" title="Edit key" on:click={() => editKeysClick("public")}><FaIcon icon={faEdit} /></button>
-			</div>
+			{#if hasPeerAccess(peer, PeerAccess.WritePublicKey, $userInfo$.wgnet?.peerAccess)}
+				<div class="join">
+					<button type="button" class="btn btn-sm btn-ghost join-item" title="Remove key" on:click={() => setPeerPublicKey(peer.id, null, peer.name)}><FaIcon icon={faTrash} /></button>
+					<button type="button" class="btn btn-sm btn-ghost join-item" title="Edit key" on:click={() => editKeysClick("public")}><FaIcon icon={faEdit} /></button>
+				</div>
+			{/if}
 		</div>
 	{:else}
 		<div class="alert alert-warning mb-3">

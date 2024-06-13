@@ -7,3 +7,4 @@ SET
 	fwMark = @fwMark
 WHERE
 	id = @id
+	AND matchPeerCondition (@requestPeerCondition, tags, id)

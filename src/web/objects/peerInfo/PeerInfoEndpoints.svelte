@@ -5,6 +5,7 @@
 	import PeerInfoEndpointItem from "./PeerInfoEndpointsItem.svelte";
 
 	export let peer: PeerInfo;
+	export let canEdit: boolean;
 
 	let newEndpoint = "";
 	const addEndpoint = async () => {
@@ -17,14 +18,16 @@
 	<svelte:fragment slot="title">
 		<span class="flex-none">Endpoints</span>
 		<span class="badge badge-primary">{peer.endpoints.length}</span>
-		<form class="contents" on:submit|preventDefault={addEndpoint}>
-			<input class="input input-ghost w-full" placeholder="Add endpoint" bind:value={newEndpoint} />
-		</form>
+		{#if canEdit}
+			<form class="contents" on:submit|preventDefault={addEndpoint}>
+				<input class="input input-ghost w-full" placeholder="Add endpoint" bind:value={newEndpoint} />
+			</form>
+		{/if}
 	</svelte:fragment>
 	{#if peer.endpoints.length > 0}
 		<div class="flex flex-col">
 			{#each peer.endpoints as endpoint}
-				<PeerInfoEndpointItem {peer} {endpoint} />
+				<PeerInfoEndpointItem {peer} {endpoint} {canEdit} />
 			{/each}
 		</div>
 	{:else}

@@ -22,6 +22,7 @@ import {
 	dbPeerLinkNonKeySchema,
 } from "../database/types";
 import { generate32BytesKey } from "../keys";
+import { PeerAccess } from "../../common/peerConditions/accessRights";
 
 export default fastifyPlugin(async (fastify) => {
 	const { deletePeerAllowedIp, deletePeerEndpoint, deletePeerIp, deletePeerLink, upsertPeerAllowedIp, upsertPeerEndpoint, upsertPeerIp, upsertPeerLink } = fastify.database.requests;
@@ -38,7 +39,7 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
-			upsertPeerAllowedIp({ ...request.body, ...request.params });
+			upsertPeerAllowedIp({ ...request.body, ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -51,7 +52,7 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbPeerAllowedIpKeySchema },
 		},
 		async (request, reply) => {
-			deletePeerAllowedIp(request.params);
+			deletePeerAllowedIp({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -68,7 +69,7 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
-			upsertPeerEndpoint({ ...request.body, ...request.params });
+			upsertPeerEndpoint({ ...request.body, ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -81,7 +82,7 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbPeerEndpointKeySchema },
 		},
 		async (request, reply) => {
-			deletePeerEndpoint(request.params);
+			deletePeerEndpoint({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -98,7 +99,7 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
-			upsertPeerIp({ ...request.body, ...request.params });
+			upsertPeerIp({ ...request.body, ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -111,7 +112,7 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbPeerIpKeySchema },
 		},
 		async (request, reply) => {
-			deletePeerIp(request.params);
+			deletePeerIp({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -132,7 +133,7 @@ export default fastifyPlugin(async (fastify) => {
 			if (item.presharedKey === "generate") {
 				item.presharedKey = generate32BytesKey();
 			}
-			upsertPeerLink(item);
+			upsertPeerLink({ ...item, requestPeerCondition: request.peerCondition(PeerAccess.WriteLink) });
 			return reply.status(204).send();
 		},
 	);
@@ -145,7 +146,7 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbPeerLinkKeySchema },
 		},
 		async (request, reply) => {
-			deletePeerLink(request.params);
+			deletePeerLink({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteLink) });
 			return reply.status(204).send();
 		},
 	);

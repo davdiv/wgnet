@@ -4,3 +4,4 @@ SET
 	publicKey = parse32BytesBase64 (@publicKey)
 WHERE
 	id = @id
+	AND matchPeerCondition (@requestPeerCondition, tags, id)

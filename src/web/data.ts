@@ -4,7 +4,7 @@ import Fuse from "fuse.js";
 import { DataSet } from "vis-data";
 import { promiseStoreToValueStore } from "../common/promiseToStore";
 import type { PeerLinkInfo } from "../node/database/requests/getAllPeerLinks";
-import { getAllPeerLinks, getAllPeers, getAllTags } from "./requests";
+import { getAllPeerLinks, getAllPeers, getAllTags, getUserInfo } from "./requests";
 
 const _refresh$ = writable({});
 export const refresh = () => _refresh$.set({});
@@ -52,6 +52,12 @@ const toMapMultiple = <T, K extends string | number>(array: T[], getValues: (ite
 	}
 	return map;
 };
+
+export const userInfoPromise$ = computed(() => {
+	refresh$();
+	return untrack(getUserInfo);
+});
+export const userInfo$ = promiseStoreToValueStore(userInfoPromise$, {});
 
 export const allPeersPromise$ = computed(() => {
 	refresh$();

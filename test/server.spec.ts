@@ -3,6 +3,8 @@ import { rm } from "fs/promises";
 import { join } from "path";
 import { beforeEach, expect, test } from "vitest";
 import { formatBase64 } from "../src/common/keys";
+import { fullPeerAdminRights } from "../src/common/peerConditions/accessRights";
+import { pcTag } from "../src/common/peerConditions/evaluate";
 import type { WgConfig } from "../src/common/wgConfig/type";
 import { formatWgConfig } from "../src/common/wgConfig/wg/formatter";
 import type { PeerInfo } from "../src/node/database/requests/getAllPeers";
@@ -10,7 +12,6 @@ import type { TagInfo } from "../src/node/database/requests/getAllTags";
 import type { DBNewPeer, DBNewTag, DBPeerEndpoint, DBPeerEndpointKey, DBPeerIp, DBPeerIpKey, DBPeerLink, DBPeerLinkKey, StringifiedBinary } from "../src/node/database/types";
 import { extractKey, generate32BytesKey, generateKeys, parsePublicKey } from "../src/node/keys";
 import { createServer } from "../src/node/routes";
-import { pcTag } from "./peerConditionUtils";
 import { mkTempDir } from "./utils";
 
 const headerTypeJson = { "Content-Type": "application/json" };
@@ -30,7 +31,12 @@ beforeEach(async () => {
 		},
 	});
 	await server.ready();
-	const auth = server.jwt.sign({});
+	const auth = server.jwt.sign({
+		wgnet: {
+			peerAccess: [fullPeerAdminRights],
+			tagsAdmin: true,
+		},
+	});
 	cookies = { auth };
 	return async () => {
 		await server.close();

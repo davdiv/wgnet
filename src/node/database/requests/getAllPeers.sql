@@ -54,3 +54,5 @@ FROM
 	LEFT JOIN peerAllowedIps as allowedIp ON peer.id = allowedIp.peer
 GROUP BY
 	peer.id
+HAVING
+	matchPeerCondition (@requestPeerCondition, tags, id)

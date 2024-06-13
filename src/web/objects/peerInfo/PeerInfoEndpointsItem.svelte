@@ -8,11 +8,14 @@
 
 	export let peer: PeerInfo;
 	export let endpoint: Omit<DBPeerEndpoint, "peer">;
+	export let canEdit: boolean;
 </script>
 
 <div class="flex items-center gap-2">
 	<span>{endpoint.endpoint}</span>
-	<button type="button" class="btn btn-sm btn-ghost" on:click={() => removePeerEndpoint({ peer: peer.id, endpoint: endpoint.endpoint })}><FaIcon icon={faTrash} /></button>
+	{#if canEdit}
+		<button type="button" class="btn btn-sm btn-ghost" on:click={() => removePeerEndpoint({ peer: peer.id, endpoint: endpoint.endpoint })}><FaIcon icon={faTrash} /></button>
+	{/if}
 	<span>{endpoint.priority}</span>
 	<PeerConditionDisplay peerCondition={endpoint.peerCondition} />
 </div>

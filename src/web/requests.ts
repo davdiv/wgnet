@@ -16,6 +16,7 @@ import type {
 	StringifiedBinary,
 	dbPeerNonKeyNonSecSchema,
 } from "../node/database/types";
+import type { UserInfo } from "../node/routes/authentication";
 import { refresh } from "./data";
 import { navigate } from "./router/locationStore";
 import { ToastType, addToast } from "./toasts/toasts";
@@ -48,6 +49,7 @@ const dataFetch =
 	async () =>
 		await callFetch<T>(url, action);
 
+export const getUserInfo = dataFetch<UserInfo>("/api/user", "retrieving user info");
 export const getAllPeers = dataFetch<PeerInfo[]>("/api/peers", "retrieving the list of peers");
 export const getAllPeerLinks = dataFetch<PeerLinkInfo[]>("/api/peerLinks", "retrieving the list of peer links");
 export const getAllTags = dataFetch<TagInfo[]>("/api/tags", "retrieving the list of tags");
@@ -73,13 +75,14 @@ export const setPeerPublicKey = async (id: number, publicKey: string | null, nam
 };
 export const getPeerConfig = async (id: number) => await callFetch<WgConfig>(`/api/peers/${id}/config`, "retrieving peer configuration");
 
-export const addPeer = async (name: string) => {
+export const addPeer = async (name: string, tags: number[]) => {
 	const { id } = await callFetch<{ id: number }>("/api/peers", `creating peer ${JSON.stringify(name)}`, {
 		method: "POST",
 		headers: jsonHeaders,
 		body: JSON.stringify({
 			name,
 			privateKey: "generate",
+			tags,
 		}),
 	});
 	addToast(`Peer ${name} was successfully created.`, ToastType.success);

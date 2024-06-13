@@ -7,6 +7,7 @@
 	import PeerInfoAllowedIPsItem from "./PeerInfoAllowedIPsItem.svelte";
 
 	export let peer: PeerInfo;
+	export let canEdit: boolean;
 
 	let newAllowedIP = "";
 	const addAllowedIP = async () => {
@@ -26,12 +27,14 @@
 	<svelte:fragment slot="title">
 		<span class="flex-none">Allowed IPs</span>
 		<span class="badge badge-primary">{peer.allowedIps.length}</span>
-		<form class="contents" on:submit|preventDefault={addAllowedIP}><input class="input input-ghost w-full" bind:value={newAllowedIP} placeholder="Add CIDR" /></form>
+		{#if canEdit}
+			<form class="contents" on:submit|preventDefault={addAllowedIP}><input class="input input-ghost w-full" bind:value={newAllowedIP} placeholder="Add CIDR" /></form>
+		{/if}
 	</svelte:fragment>
 	{#if peer.allowedIps.length > 0}
 		<div class="flex flex-col">
 			{#each peer.allowedIps as allowedIp}
-				<PeerInfoAllowedIPsItem {peer} {allowedIp} />
+				<PeerInfoAllowedIPsItem {peer} {allowedIp} {canEdit} />
 			{/each}
 		</div>
 	{:else}

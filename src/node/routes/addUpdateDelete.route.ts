@@ -1,8 +1,11 @@
 import type { KeyObject } from "crypto";
 import fastifyPlugin from "fastify-plugin";
+import { PeerAccess } from "../../common/peerConditions/accessRights";
+import { matchPeerCondition } from "../../common/peerConditions/evaluate";
 import type { AcceptStringifiedBinary, DBNewPeer, DBNewPeerExposed, DBNewTag, DBPeer, DBPeerExposed, DBPeerKey, DBTag, DBTagKey, StringifiedBinary } from "../database/types";
 import { dbPeerKeySchema, dbPeerNonKeyNonSecSchema, dbPeerNonKeySchema, dbTagKeySchema, dbTagNonKeySchema } from "../database/types";
 import { derivePublicKey, extractKey, generateKeys, parsePrivateKey, parsePublicKey } from "../keys";
+import { accessForbidden } from "./authentication";
 
 export default fastifyPlugin(async (fastify) => {
 	const { addPeer, setPeerTags, addTag, updateTag, updatePeer, deletePeer, deleteTag } = fastify.database.requests;
@@ -22,7 +25,11 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
+			const peerCondition = request.peerCondition(PeerAccess.CreateDelete);
 			const body: AcceptStringifiedBinary<DBNewPeer> = { ...request.body, tags: processTags(request.body.tags) };
+			if (!matchPeerCondition(peerCondition, body.tags, -1)) {
+				return accessForbidden(reply);
+			}
 			if (body.privateKey != null) {
 				let privateKey: KeyObject;
 				let publicKey: KeyObject;
@@ -54,7 +61,7 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
-			updatePeer({ ...request.body, ...request.params });
+			updatePeer({ ...request.body, ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
 			return reply.code(204).send();
 		},
 	);
@@ -74,6 +81,7 @@ export default fastifyPlugin(async (fastify) => {
 			setPeerTags({
 				...request.params,
 				tags: processTags(request.body.tags),
+				requestPeerCondition: request.peerCondition(PeerAccess.WriteTags),
 			});
 			return reply.status(204).send();
 		},
@@ -86,7 +94,7 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbPeerKeySchema },
 		},
 		async (request, reply) => {
-			deletePeer(request.params);
+			deletePeer({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.CreateDelete) });
 			return reply.code(204).send();
 		},
 	);
@@ -101,6 +109,9 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
+			if (!request.user.wgnet?.tagsAdmin) {
+				return accessForbidden(reply);
+			}
 			const id = addTag(request.body);
 			return reply.code(200).send({ id });
 		},
@@ -118,6 +129,9 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
+			if (!request.user.wgnet?.tagsAdmin) {
+				return accessForbidden(reply);
+			}
 			updateTag({ ...request.body, ...request.params });
 			return reply.code(204).send();
 		},
@@ -131,6 +145,9 @@ export default fastifyPlugin(async (fastify) => {
 			schema: { params: dbTagKeySchema },
 		},
 		async (request, reply) => {
+			if (!request.user.wgnet?.tagsAdmin) {
+				return accessForbidden(reply);
+			}
 			deleteTag(request.params);
 			return reply.code(204).send();
 		},

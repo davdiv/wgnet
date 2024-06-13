@@ -1,4 +1,4 @@
 import type { AcceptStringifiedBinary, DBNewPeerLink } from "../types";
-import { createRunStatement } from "../utils";
+import { createRunStatementCheckChange } from "../utils";
 
-export default createRunStatement<AcceptStringifiedBinary<DBNewPeerLink>>;
+export default createRunStatementCheckChange<AcceptStringifiedBinary<DBNewPeerLink> & { requestPeerCondition: string }>;

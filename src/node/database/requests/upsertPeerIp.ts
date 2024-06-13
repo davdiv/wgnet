@@ -1,4 +1,4 @@
 import type { AcceptStringifiedBinary, DBNewPeerIp } from "../types";
-import { createRunStatement } from "../utils";
+import { createRunStatementCheckChange } from "../utils";
 
-export default createRunStatement<AcceptStringifiedBinary<DBNewPeerIp>>;
+export default createRunStatementCheckChange<AcceptStringifiedBinary<DBNewPeerIp> & { requestPeerCondition: string }>;

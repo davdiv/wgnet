@@ -1,8 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { matchPeerCondition } from "../src/common/peerConditions/evaluate";
+import { matchPeerCondition, pcAnd, pcNot, pcOr, pcPeerId, pcTag } from "../src/common/peerConditions/evaluate";
 import { simplifyPeerCondition } from "../src/common/peerConditions/simplify";
 import { validatePeerCondition } from "../src/common/peerConditions/validate";
-import { pcAnd, pcNot, pcOr, pcPeerId, pcTag } from "./peerConditionUtils";
 
 describe("validatePeerCondition", () => {
 	test("should work", () => {

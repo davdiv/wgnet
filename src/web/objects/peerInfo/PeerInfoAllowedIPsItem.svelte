@@ -8,12 +8,15 @@
 
 	export let peer: PeerInfo;
 	export let allowedIp: Omit<StringifiedBinary<DBPeerAllowedIp>, "peer">;
+	export let canEdit: boolean;
 </script>
 
 <div class="flex items-center gap-2">
 	<span>{allowedIp.ip}/{allowedIp.netmask}</span>
 	<PeerConditionDisplay peerCondition={allowedIp.peerCondition} />
-	<button type="button" class="btn btn-sm btn-ghost" on:click={() => removePeerAllowedIp({ peer: peer.id, ip: allowedIp.ip, netmask: allowedIp.netmask })}>
-		<FaIcon icon={faTrash} />
-	</button>
+	{#if canEdit}
+		<button type="button" class="btn btn-sm btn-ghost" on:click={() => removePeerAllowedIp({ peer: peer.id, ip: allowedIp.ip, netmask: allowedIp.netmask })}>
+			<FaIcon icon={faTrash} />
+		</button>
+	{/if}
 </div>

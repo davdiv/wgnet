@@ -1,4 +1,4 @@
 import type { DBNewPeerEndpoint } from "../types";
-import { createRunStatement } from "../utils";
+import { createRunStatementCheckChange } from "../utils";
 
-export default createRunStatement<DBNewPeerEndpoint>;
+export default createRunStatementCheckChange<DBNewPeerEndpoint & { requestPeerCondition: string }>;
