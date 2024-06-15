@@ -18,7 +18,7 @@
 <div class="flex flex-col p-3 gap-2">
 	<Collapse>
 		<svelte:fragment slot="title">Query</svelte:fragment>
-		<PeerConditionEditItem bind:value={$queryForEdition$} />
+		<PeerConditionEditItem value$={queryForEdition$} />
 	</Collapse>
 	<Collapse>
 		<svelte:fragment slot="title">Simplified query</svelte:fragment>
@@ -27,6 +27,14 @@
 		{:else}
 			<span>There is no simplified query.</span>
 		{/if}
+	</Collapse>
+	<Collapse>
+		<svelte:fragment slot="title">JSON query</svelte:fragment>
+		<textarea class="textarea-ghost p-3 font-mono" readonly>{JSON.stringify($queryForEdition$)}</textarea>
+	</Collapse>
+	<Collapse>
+		<svelte:fragment slot="title">JSON simplified query</svelte:fragment>
+		<textarea class="textarea-ghost p-3 font-mono" readonly>{JSON.stringify($simplifiedQuery$)}</textarea>
 	</Collapse>
 	<Collapse>
 		<svelte:fragment slot="title">

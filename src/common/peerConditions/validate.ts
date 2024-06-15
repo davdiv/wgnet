@@ -1,25 +1,23 @@
 import type { PeerCondition } from "./evaluate";
-import { Operator } from "./evaluate";
+import { ComposedConditionType, SimpleConditionType } from "./evaluate";
 
 const createValidateParsedPeerCondition = (acceptMinusOne: boolean) => {
 	const validate = (x: any): x is PeerCondition => {
-		if (Array.isArray(x)) {
-			switch (x[0]) {
-				case Operator.Not:
-					if (x.length != 2) {
-						return false;
-					}
-					return validate(x[1]);
-				case Operator.And:
-				case Operator.Or:
-					return x.every(validate);
-				default:
-					return false;
-			}
-		} else if ((x > 0 && Number.isSafeInteger(x)) || (acceptMinusOne && x === -1)) {
-			return true;
+		if (!Array.isArray(x)) {
+			return false;
 		}
-		return false;
+		switch (x[0]) {
+			case SimpleConditionType.PeerId:
+			case SimpleConditionType.Tag:
+				return x.length === 2 && ((x[1] > 0 && Number.isSafeInteger(x[1])) || (acceptMinusOne && x[1] === -1));
+			case ComposedConditionType.Not:
+				return x.length === 2 && validate(x[1]);
+			case ComposedConditionType.And:
+			case ComposedConditionType.Or:
+				return x.slice(1).every(validate);
+			default:
+				return false;
+		}
 	};
 	return validate;
 };

@@ -3,14 +3,15 @@ import { rm } from "fs/promises";
 import { join } from "path";
 import { beforeEach, expect, test } from "vitest";
 import { formatBase64 } from "../src/common/keys";
+import type { WgConfig } from "../src/common/wgConfig/type";
 import { formatWgConfig } from "../src/common/wgConfig/wg/formatter";
 import type { PeerInfo } from "../src/node/database/requests/getAllPeers";
 import type { TagInfo } from "../src/node/database/requests/getAllTags";
 import type { DBNewPeer, DBNewTag, DBPeerEndpoint, DBPeerEndpointKey, DBPeerIp, DBPeerIpKey, DBPeerLink, DBPeerLinkKey, StringifiedBinary } from "../src/node/database/types";
 import { extractKey, generate32BytesKey, generateKeys, parsePublicKey } from "../src/node/keys";
 import { createServer } from "../src/node/routes";
+import { pcTag } from "./peerConditionUtils";
 import { mkTempDir } from "./utils";
-import type { WgConfig } from "../src/common/wgConfig/type";
 
 const headerTypeJson = { "Content-Type": "application/json" };
 
@@ -229,7 +230,7 @@ test("simple config with 3 peers and different tags", async () => {
 	const tag1 = await createTag({ name: "tag1" });
 	addPeerTag(id2, tag1);
 	await addEndpoint(id1, "172.193.34.21:7432", { priority: 1 });
-	await addEndpoint(id1, "192.168.1.16:7432", { priority: 2, peerCondition: JSON.stringify(tag1) });
+	await addEndpoint(id1, "192.168.1.16:7432", { priority: 2, peerCondition: JSON.stringify(pcTag(tag1)) });
 	await linkPeers(id1, id2, { presharedKey: formatBase64(presharedKey12) });
 	await linkPeers(id1, id3, { presharedKey: formatBase64(presharedKey13) });
 	await expectConfig(id1, {

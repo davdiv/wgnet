@@ -1,5 +1,5 @@
 import { asWritable, computed, writable } from "@amadeus-it-group/tansu";
-import { evaluateCondition } from "../../common/peerConditions/evaluate";
+import { SimpleConditionType, evaluateCondition } from "../../common/peerConditions/evaluate";
 import { simplifyPeerCondition } from "../../common/peerConditions/simplify";
 import { validateEditedParsedPeerCondition, validateParsedPeerCondition } from "../../common/peerConditions/validate";
 import { allPeers$ } from "../data";
@@ -25,7 +25,7 @@ export const createSearchByTagLogic = () => {
 	const queryValidForSearch$ = computed(() => validateParsedPeerCondition(parsedQuery$()));
 
 	const queryForEdition$ = asWritable(
-		computed(() => (queryValidForEdition$() ? structuredClone(parsedQuery$()) : -1)),
+		computed(() => (queryValidForEdition$() ? structuredClone(parsedQuery$()) : [SimpleConditionType.Tag, -1])),
 		parsedQuery$.set,
 	);
 	const simplifiedQuery$ = computed(() => (queryValidForEdition$() ? simplifyPeerCondition(parsedQuery$()) : null));
@@ -38,7 +38,7 @@ export const createSearchByTagLogic = () => {
 		if (!peerCondition) {
 			return [];
 		}
-		return allPeers$().filter((peer) => evaluateCondition(peerCondition, new Set(peer.tags)));
+		return allPeers$().filter((peer) => evaluateCondition(peerCondition, new Set(peer.tags), peer.id));
 	});
 
 	return { matchParams$, queryValidForSearch$, simplifiedQuery$, queryForEdition$, searchResult$ };

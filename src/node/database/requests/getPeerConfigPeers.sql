@@ -19,15 +19,15 @@ FROM
 	)
 	LEFT JOIN peerIps ON (
 		peerIps.peer = peer.id
-		AND matchPeerCondition (peerIps.peerCondition, @peerTags)
+		AND matchPeerCondition (peerIps.peerCondition, @peerTags, @id)
 	)
 	LEFT JOIN peerAllowedIps ON (
 		peerAllowedIps.peer = peer.id
-		AND matchPeerCondition (peerAllowedIps.peerCondition, @peerTags)
+		AND matchPeerCondition (peerAllowedIps.peerCondition, @peerTags, @id)
 	)
 	LEFT JOIN peerEndpoints ON (
 		peerEndpoints.peer = peer.id
-		AND matchPeerCondition (peerEndpoints.peerCondition, @peerTags)
+		AND matchPeerCondition (peerEndpoints.peerCondition, @peerTags, @id)
 	)
 WHERE
 	peer.publicKey NOTNULL
