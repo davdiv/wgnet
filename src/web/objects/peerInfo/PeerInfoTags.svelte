@@ -6,7 +6,7 @@
 	import Collapse from "../../generic/Collapse.svelte";
 	import FaIcon from "../../generic/FaIcon.svelte";
 	import Tags from "../../lists/Tags.svelte";
-	import { attachTag, detachTag } from "../../requests";
+	import { setTags } from "../../requests";
 	import { searchTagsExclude } from "../../search/search";
 	import TagDisplay from "../TagDisplay.svelte";
 
@@ -19,22 +19,22 @@
 	<svelte:fragment slot="title">
 		<span class="flex-none">Tags</span>
 		<span class="badge badge-primary">{peer.tags.length}</span>
-		<AutoComplete
-			placeholder="Add tag"
-			class="grow"
-			selectSuggestion={(tag) => {
-				attachTag(peer.id, tag.item.id, peer.name, tag.item.name);
-			}}
-			getSuggestions={searchTagsExclude(peer.tags)}
-			let:suggestion
-		>
+		<AutoComplete placeholder="Add tag" class="grow" selectSuggestion={(tag) => setTags(peer.id, [...peer.tags, tag.item.id], peer.name)} getSuggestions={searchTagsExclude(peer.tags)} let:suggestion>
 			<TagDisplay tag={suggestion.item} />
 		</AutoComplete>
 	</svelte:fragment>
 	{#if peer.tags.length > 0}
 		<Tags tags={tagsInfo} let:tag>
-			<button type="button" class="btn btn-sm btn-ghost" title="Remove tag from peer" on:click={() => detachTag(peer.id, tag.id, peer.name, $allTagsMap$[tag.id].name)}
-				><FaIcon icon={faTrash} /></button
+			<button
+				type="button"
+				class="btn btn-sm btn-ghost"
+				title="Remove tag from peer"
+				on:click={() =>
+					setTags(
+						peer.id,
+						peer.tags.filter((t) => t != tag.id),
+						peer.name,
+					)}><FaIcon icon={faTrash} /></button
 			>
 		</Tags>
 	{:else}

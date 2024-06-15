@@ -7,16 +7,21 @@ const typeStringOrNull = { type: ["string", "null"], default: null };
 const typeNumberOrNull = { type: ["number", "null"], default: null };
 const typePeerCondition = { type: ["string", "null"], default: null, format: "peerCondition" };
 const typeColorOrNull = { type: ["string", "null"], default: null, format: "color" };
+const typeNumberArrayOrNull = { type: ["array", "null"], items: { type: "integer" }, default: null };
 
 export interface DBPeer {
 	id: number;
 	name: string;
 	description: string | null;
+	tags: string | null;
 	interfaceName: string | null;
 	listenPort: number | null;
 	fwMark: number | null;
 	publicKey: BinaryKey | null;
 	privateKey: BinaryKey | null;
+}
+export interface DBPeerExposed extends Omit<DBPeer, "tags"> {
+	tags: number[] | null;
 }
 
 export const dbPeerKeySchema = {
@@ -25,6 +30,7 @@ export const dbPeerKeySchema = {
 export const dbPeerSecSchema = {
 	publicKey: typeStringOrNull,
 	privateKey: typeStringOrNull,
+	tags: typeNumberArrayOrNull,
 };
 export const dbPeerNonKeyNonSecSchema = {
 	name: typeString,
@@ -44,6 +50,7 @@ export const dbPeerSchema = {
 
 export type DBPeerKey = Pick<DBPeer, "id">;
 export type DBNewPeer = Omit<DBPeer, "id">;
+export type DBNewPeerExposed = Omit<DBPeerExposed, "id">;
 
 export interface DBTag {
 	id: number;
@@ -67,24 +74,6 @@ export const dbTagSchema = {
 
 export type DBTagKey = Pick<DBTag, "id">;
 export type DBNewTag = Omit<DBTag, "id">;
-
-export interface DBPeerTag {
-	peer: number;
-	tag: number;
-}
-
-export const dbPeerTagKeySchema = {
-	peer: typeNumber,
-	tag: typeNumber,
-};
-export const dbPeerTagNonKeySchema = {};
-export const dbPeerTagSchema = {
-	...dbPeerTagKeySchema,
-	...dbPeerTagNonKeySchema,
-};
-
-export type DBPeerTagKey = DBPeerTag;
-export type DBNewPeerTag = DBPeerTag;
 
 export interface DBPeerLink {
 	peer1: number;

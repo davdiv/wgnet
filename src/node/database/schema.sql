@@ -3,6 +3,7 @@ CREATE TABLE version (wgnetVersion TEXT NOT NULL);
 CREATE TABLE peers (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	name TEXT UNIQUE NOT NULL,
+	tags TEXT,
 	description TEXT,
 	interfaceName TEXT,
 	listenPort INTEGER,
@@ -16,12 +17,6 @@ CREATE TABLE tags (
 	name TEXT UNIQUE NOT NULL,
 	description TEXT,
 	color TEXT
-);
-
-CREATE TABLE peerTags (
-	peer INTEGER NOT NULL REFERENCES peers (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	tag INTEGER NOT NULL REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (peer, tag)
 );
 
 CREATE TABLE peerLinks (

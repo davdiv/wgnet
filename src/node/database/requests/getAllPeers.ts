@@ -4,7 +4,7 @@ import { parseColumns } from "../utils";
 
 const postProcess = parseColumns("tags", "addresses", "endpoints", "allowedIps");
 
-export interface PeerInfo extends StringifiedBinary<Omit<DBPeer, "privateKey">> {
+export interface PeerInfo extends StringifiedBinary<Omit<DBPeer, "privateKey" | "tags">> {
 	hasPrivateKey: 0 | 1;
 	tags: number[];
 	addresses: Omit<StringifiedBinary<DBPeerIp>, "peer">[];

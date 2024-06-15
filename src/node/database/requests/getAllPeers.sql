@@ -7,10 +7,7 @@ SELECT
 	peer.fwMark as fwMark,
 	formatBase64 (peer.publicKey) as publicKey,
 	(peer.privateKey NOTNULL) as hasPrivateKey,
-	json_group_array(DISTINCT tag.tag) FILTER (
-		WHERE
-			tag.tag NOTNULL
-	) as tags,
+	coalesce(peer.tags, '[]') as tags,
 	json_group_array(
 		DISTINCT json_object(
 			'ip',
@@ -52,7 +49,6 @@ SELECT
 	) as allowedIps
 FROM
 	peers as peer
-	LEFT JOIN peerTags as tag ON peer.id = tag.peer
 	LEFT JOIN peerIps as ip ON peer.id = ip.peer
 	LEFT JOIN peerEndpoints as endpoint ON peer.id = endpoint.peer
 	LEFT JOIN peerAllowedIps as allowedIp ON peer.id = allowedIp.peer

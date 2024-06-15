@@ -1,14 +1,19 @@
 import type { KeyObject } from "crypto";
 import fastifyPlugin from "fastify-plugin";
-import type { AcceptStringifiedBinary, DBNewPeer, DBNewTag, DBPeer, DBPeerKey, DBTag, DBTagKey, StringifiedBinary } from "../database/types";
+import type { AcceptStringifiedBinary, DBNewPeer, DBNewPeerExposed, DBNewTag, DBPeer, DBPeerExposed, DBPeerKey, DBTag, DBTagKey, StringifiedBinary } from "../database/types";
 import { dbPeerKeySchema, dbPeerNonKeyNonSecSchema, dbPeerNonKeySchema, dbTagKeySchema, dbTagNonKeySchema } from "../database/types";
 import { derivePublicKey, extractKey, generateKeys, parsePrivateKey, parsePublicKey } from "../keys";
 
 export default fastifyPlugin(async (fastify) => {
-	const { addPeer, addTag, updateTag, updatePeer, deletePeer, deleteTag } = fastify.database.requests;
+	const { addPeer, setPeerTags, addTag, updateTag, updatePeer, deletePeer, deleteTag } = fastify.database.requests;
+
+	const processTags = (tags: number[] | null): string | null => {
+		const tagsSet = new Set(tags ?? []);
+		return tagsSet.size > 0 ? JSON.stringify([...tagsSet]) : null;
+	};
 
 	fastify.post<{
-		Body: StringifiedBinary<DBNewPeer>;
+		Body: StringifiedBinary<DBNewPeerExposed>;
 	}>(
 		"/api/peers",
 		{
@@ -17,7 +22,7 @@ export default fastifyPlugin(async (fastify) => {
 			},
 		},
 		async (request, reply) => {
-			const body: AcceptStringifiedBinary<DBNewPeer> = { ...request.body };
+			const body: AcceptStringifiedBinary<DBNewPeer> = { ...request.body, tags: processTags(request.body.tags) };
 			if (body.privateKey != null) {
 				let privateKey: KeyObject;
 				let publicKey: KeyObject;
@@ -54,6 +59,25 @@ export default fastifyPlugin(async (fastify) => {
 		},
 	);
 
+	fastify.put<{
+		Params: StringifiedBinary<DBPeerKey>;
+		Body: Pick<DBPeerExposed, "tags">;
+	}>(
+		"/api/peers/:id/tags",
+		{
+			schema: {
+				params: dbPeerKeySchema,
+				body: { tags: dbPeerNonKeySchema.tags },
+			},
+		},
+		async (request, reply) => {
+			setPeerTags({
+				...request.params,
+				tags: processTags(request.body.tags),
+			});
+			return reply.status(204).send();
+		},
+	);
 	fastify.delete<{
 		Params: StringifiedBinary<DBPeerKey>;
 	}>(

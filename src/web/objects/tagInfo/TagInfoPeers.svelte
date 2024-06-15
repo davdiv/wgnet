@@ -6,7 +6,7 @@
 	import Collapse from "../../generic/Collapse.svelte";
 	import FaIcon from "../../generic/FaIcon.svelte";
 	import Peers from "../../lists/Peers.svelte";
-	import { attachTag, detachTag } from "../../requests";
+	import { setTags } from "../../requests";
 	import { searchPeersExclude } from "../../search/search";
 	import PeerDisplay from "../PeerDisplay.svelte";
 
@@ -23,7 +23,7 @@
 			class="flex-grow"
 			placeholder="Add peer"
 			selectSuggestion={(peer) => {
-				attachTag(peer.item.id, tag.id, peer.item.name, tag.name);
+				setTags(peer.item.id, [...peer.item.tags, tag.id], peer.item.name);
 			}}
 			getSuggestions={searchPeersExclude(peers.map(({ id }) => id))}
 			let:suggestion
@@ -33,7 +33,16 @@
 	</svelte:fragment>
 	{#if peers.length > 0}
 		<Peers {peers} let:peer>
-			<button class="btn btn-sm btn-ghost" title="Remove tag from peer" on:click={() => detachTag(peer.id, tag.id, peer.name, tag.name)}><FaIcon icon={faTrash} /></button>
+			<button
+				class="btn btn-sm btn-ghost"
+				title="Remove tag from peer"
+				on:click={() =>
+					setTags(
+						peer.id,
+						peer.tags.filter((t) => t != tag.id),
+						peer.name,
+					)}><FaIcon icon={faTrash} /></button
+			>
 		</Peers>
 	{:else}
 		<div>This tag is not attached to any peer.</div>

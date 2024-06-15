@@ -7,14 +7,10 @@ SELECT
 		WHERE
 			ip.ip NOTNULL
 	) as address,
-	json_group_array(DISTINCT tag.tag) FILTER (
-		WHERE
-			tag.tag NOTNULL
-	) as tags
+	coalesce(peer.tags, '[]') as tags
 FROM
 	peers as peer
 	LEFT JOIN peerIps as ip ON peer.id = ip.peer
-	LEFT JOIN peerTags as tag ON peer.id = tag.peer
 WHERE
 	peer.id = ?
 GROUP BY

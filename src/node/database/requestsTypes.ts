@@ -6,7 +6,6 @@ export interface RequestsTypes {
 	deletePeerEndpoint: ReturnType<typeof import("./requests/deletePeerEndpoint").default>;
 	deletePeerIp: ReturnType<typeof import("./requests/deletePeerIp").default>;
 	deletePeerLink: ReturnType<typeof import("./requests/deletePeerLink").default>;
-	deletePeerTag: ReturnType<typeof import("./requests/deletePeerTag").default>;
 	deleteTag: ReturnType<typeof import("./requests/deleteTag").default>;
 	getAllPeerLinks: ReturnType<typeof import("./requests/getAllPeerLinks").default>;
 	getAllPeers: ReturnType<typeof import("./requests/getAllPeers").default>;
@@ -16,11 +15,11 @@ export interface RequestsTypes {
 	getPeerLinkPresharedKey: ReturnType<typeof import("./requests/getPeerLinkPresharedKey").default>;
 	getPeerPrivateKey: ReturnType<typeof import("./requests/getPeerPrivateKey").default>;
 	setPeerKeys: ReturnType<typeof import("./requests/setPeerKeys").default>;
+	setPeerTags: ReturnType<typeof import("./requests/setPeerTags").default>;
 	updatePeer: ReturnType<typeof import("./requests/updatePeer").default>;
 	updateTag: ReturnType<typeof import("./requests/updateTag").default>;
 	upsertPeerAllowedIp: ReturnType<typeof import("./requests/upsertPeerAllowedIp").default>;
 	upsertPeerEndpoint: ReturnType<typeof import("./requests/upsertPeerEndpoint").default>;
 	upsertPeerIp: ReturnType<typeof import("./requests/upsertPeerIp").default>;
 	upsertPeerLink: ReturnType<typeof import("./requests/upsertPeerLink").default>;
-	upsertPeerTag: ReturnType<typeof import("./requests/upsertPeerTag").default>;
 }

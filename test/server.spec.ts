@@ -88,12 +88,12 @@ const addEndpoint = async (peerId: number, endpoint: string, params: Partial<Omi
 	expect(res.statusCode).toBe(204);
 };
 
-const addPeerTag = async (peer: number, tag: number) => {
+const setPeerTags = async (peer: number, tags: number[]) => {
 	const res = await server.inject({
-		url: `/api/peers/${peer}/tags/${tag}`,
+		url: `/api/peers/${peer}/tags`,
 		method: "PUT",
 		headers: headerTypeJson,
-		body: "{}",
+		body: JSON.stringify({ tags }),
 		cookies,
 	});
 	expect(res.statusCode).toBe(204);
@@ -228,7 +228,7 @@ test("simple config with 3 peers and different tags", async () => {
 	const id3 = await createPeer({ name: "peer-3", privateKey: formatBase64(extractKey(peer3PrivKey)) });
 	await addIp(id3, "10.0.0.3", { netmask: 24 });
 	const tag1 = await createTag({ name: "tag1" });
-	addPeerTag(id2, tag1);
+	await setPeerTags(id2, [tag1]);
 	await addEndpoint(id1, "172.193.34.21:7432", { priority: 1 });
 	await addEndpoint(id1, "192.168.1.16:7432", { priority: 2, peerCondition: JSON.stringify(pcTag(tag1)) });
 	await linkPeers(id1, id2, { presharedKey: formatBase64(presharedKey12) });

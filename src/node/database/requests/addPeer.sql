@@ -2,6 +2,7 @@ INSERT INTO
 	peers (
 		name,
 		description,
+		tags,
 		interfaceName,
 		listenPort,
 		fwMark,
@@ -12,6 +13,7 @@ VALUES
 	(
 		@name,
 		@description,
+		@tags,
 		@interfaceName,
 		@listenPort,
 		@fwMark,

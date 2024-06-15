@@ -12,8 +12,6 @@ import type {
 	DBPeerIpKey,
 	DBPeerLink,
 	DBPeerLinkKey,
-	DBPeerTag,
-	DBPeerTagKey,
 	DBTag,
 	StringifiedBinary,
 	dbPeerNonKeyNonSecSchema,
@@ -138,21 +136,13 @@ export const removeTag = async (id: number, name: string) => {
 	refresh();
 };
 
-export const attachTag = async (peer: number, tag: number, peerName: string, tagName: string) => {
-	await callFetch(`/api/peers/${peer}/tags/${tag}`, `attaching tag ${tagName} to peer ${peerName}`, {
+export const setTags = async (peer: number, tags: number[], peerName: string) => {
+	await callFetch(`/api/peers/${peer}/tags`, `setting tags on peer ${peerName}`, {
 		method: "PUT",
 		headers: jsonHeaders,
-		body: JSON.stringify({} as Omit<StringifiedBinary<DBPeerTag>, keyof DBPeerTagKey>),
+		body: JSON.stringify({ tags }),
 	});
-	addToast(`Tag ${tagName} was successfully attached to peer ${peerName}.`, ToastType.success);
-	refresh();
-};
-
-export const detachTag = async (peer: number, tag: number, peerName: string, tagName: string) => {
-	await callFetch(`/api/peers/${peer}/tags/${tag}`, `detaching tag ${tagName} from peer ${peerName}`, {
-		method: "DELETE",
-	});
-	addToast(`Tag ${tagName} was successfully detached from peer ${peerName}.`, ToastType.success);
+	addToast(`Tags successfully set on peer ${peerName}.`, ToastType.success);
 	refresh();
 };
 
