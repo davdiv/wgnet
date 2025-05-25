@@ -1,4 +1,4 @@
-import type { Statement } from "better-sqlite3";
+import type { StatementSync } from "node:sqlite";
 import { notFound } from "../notFound";
 
 export const parseColumns =
@@ -13,14 +13,14 @@ export const parseColumns =
 	};
 
 export const createRunStatementReturnId =
-	<T>(statement: Statement) =>
+	<T>(statement: StatementSync) =>
 	(item: T): number =>
-		statement.run(item).lastInsertRowid as number;
+		statement.run(item as any).lastInsertRowid as number;
 
 export const createRunStatementCheckChange =
-	<T>(statement: Statement) =>
+	<T>(statement: StatementSync) =>
 	(item: T) => {
-		if (statement.run(item).changes === 0) {
+		if (statement.run(item as any).changes === 0) {
 			throw notFound();
 		}
 	};

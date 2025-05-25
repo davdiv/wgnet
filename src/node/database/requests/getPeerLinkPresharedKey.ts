@@ -1,6 +1,6 @@
-import type { Statement } from "better-sqlite3";
+import type { StatementSync } from "node:sqlite";
 import type { AcceptStringifiedBinary, DBPeerLink, DBPeerLinkKey, StringifiedBinary } from "../types";
 
-export default (statement: Statement) =>
+export default (statement: StatementSync) =>
 	(item: AcceptStringifiedBinary<DBPeerLinkKey> & { requestPeerCondition: string }): Pick<StringifiedBinary<DBPeerLink>, "presharedKey"> =>
 		statement.get(item) as any;

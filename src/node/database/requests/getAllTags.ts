@@ -1,6 +1,6 @@
-import type { Statement } from "better-sqlite3";
+import type { StatementSync } from "node:sqlite";
 import type { DBTag } from "../types";
 
 export type TagInfo = DBTag;
 
-export default (statement: Statement) => (): TagInfo[] => statement.all() as any;
+export default (statement: StatementSync) => (): TagInfo[] => statement.all() as any;

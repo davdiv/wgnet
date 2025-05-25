@@ -1,9 +1,9 @@
-import type { Statement } from "better-sqlite3";
+import type { StatementSync } from "node:sqlite";
 import { parseColumns } from "../utils";
 
 const postProcess = parseColumns("address");
 
-export default (statement: Statement) =>
+export default (statement: StatementSync) =>
 	({
 		id,
 		requestPeerCondition,

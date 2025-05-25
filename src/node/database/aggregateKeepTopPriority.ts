@@ -10,6 +10,7 @@ export const aggregateKeepTopPriority = {
 			context.best = newValue;
 			context.priority = priority;
 		}
+		return context;
 	},
 	result: (context: Context) => context.best,
 };

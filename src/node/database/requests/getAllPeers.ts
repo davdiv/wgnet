@@ -1,4 +1,4 @@
-import type { Statement } from "better-sqlite3";
+import type { StatementSync } from "node:sqlite";
 import type { DBPeer, DBPeerAllowedIp, DBPeerEndpoint, DBPeerIp, StringifiedBinary } from "../types";
 import { parseColumns } from "../utils";
 
@@ -12,6 +12,6 @@ export interface PeerInfo extends StringifiedBinary<Omit<DBPeer, "privateKey" | 
 	allowedIps: Omit<StringifiedBinary<DBPeerAllowedIp>, "peer">[];
 }
 
-export default (statement: Statement) =>
+export default (statement: StatementSync) =>
 	({ requestPeerCondition }: { requestPeerCondition: string }): PeerInfo[] =>
 		statement.all({ requestPeerCondition }).map(postProcess);

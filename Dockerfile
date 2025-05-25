@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.2
-FROM docker.io/library/node:22-alpine
+FROM docker.io/library/node:24-alpine
 WORKDIR /usr/app
 COPY dist/package.json package-lock.json ./
 RUN npm ci
