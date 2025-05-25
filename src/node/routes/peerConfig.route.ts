@@ -2,6 +2,7 @@ import fastifyPlugin from "fastify-plugin";
 import { availableOutputFormats, formatConfig, outputFormatMimeType, type OutputFormat } from "../../common/wgConfig/format";
 import { notFound } from "../notFound";
 import { PeerAccess } from "../../common/peerConditions/accessRights";
+import { jsonSchema } from "../database/types";
 
 export default fastifyPlugin(async (fastify) => {
 	const { getPeerConfigPeers, getPeerConfig } = fastify.database.requests;
@@ -11,7 +12,7 @@ export default fastifyPlugin(async (fastify) => {
 			id: number;
 			format?: OutputFormat;
 		};
-	}>("/api/peers/:id/config/:format?", { schema: { params: { id: { type: "number" }, format: { type: "string" } } } }, async (request, reply) => {
+	}>("/api/peers/:id/config/:format?", { schema: { params: jsonSchema({ id: { type: "number" }, format: { type: "string" } }) } }, async (request, reply) => {
 		const { id, format } = request.params;
 		if (format && !availableOutputFormats.includes(format)) {
 			return Promise.reject(notFound());

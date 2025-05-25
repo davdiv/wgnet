@@ -3,7 +3,7 @@ import fastifyPlugin from "fastify-plugin";
 import { PeerAccess } from "../../common/peerConditions/accessRights";
 import { matchPeerCondition } from "../../common/peerConditions/evaluate";
 import type { AcceptStringifiedBinary, DBNewPeer, DBNewPeerExposed, DBNewTag, DBPeer, DBPeerExposed, DBPeerKey, DBTag, DBTagKey, StringifiedBinary } from "../database/types";
-import { dbPeerKeySchema, dbPeerNonKeyNonSecSchema, dbPeerNonKeySchema, dbTagKeySchema, dbTagNonKeySchema } from "../database/types";
+import { dbPeerKeySchema, dbPeerNonKeyNonSecSchema, dbPeerNonKeySchema, dbTagKeySchema, dbTagNonKeySchema, jsonSchema } from "../database/types";
 import { derivePublicKey, extractKey, generateKeys, parsePrivateKey, parsePublicKey } from "../keys";
 import { accessForbidden } from "./authentication";
 
@@ -21,7 +21,7 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers",
 		{
 			schema: {
-				body: dbPeerNonKeySchema,
+				body: jsonSchema(dbPeerNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -56,8 +56,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:id",
 		{
 			schema: {
-				params: dbPeerKeySchema,
-				body: dbPeerNonKeyNonSecSchema,
+				params: jsonSchema(dbPeerKeySchema),
+				body: jsonSchema(dbPeerNonKeyNonSecSchema),
 			},
 		},
 		async (request, reply) => {
@@ -73,8 +73,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:id/tags",
 		{
 			schema: {
-				params: dbPeerKeySchema,
-				body: { tags: dbPeerNonKeySchema.tags },
+				params: jsonSchema(dbPeerKeySchema),
+				body: jsonSchema({ tags: dbPeerNonKeySchema.tags }),
 			},
 		},
 		async (request, reply) => {
@@ -91,7 +91,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/peers/:id",
 		{
-			schema: { params: dbPeerKeySchema },
+			schema: { params: jsonSchema(dbPeerKeySchema) },
 		},
 		async (request, reply) => {
 			deletePeer({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.CreateDelete) });
@@ -105,7 +105,7 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/tags",
 		{
 			schema: {
-				body: dbTagNonKeySchema,
+				body: jsonSchema(dbTagNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -124,8 +124,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/tags/:id",
 		{
 			schema: {
-				params: dbTagKeySchema,
-				body: dbTagNonKeySchema,
+				params: jsonSchema(dbTagKeySchema),
+				body: jsonSchema(dbTagNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -142,7 +142,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/tags/:id",
 		{
-			schema: { params: dbTagKeySchema },
+			schema: { params: jsonSchema(dbTagKeySchema) },
 		},
 		async (request, reply) => {
 			if (!request.user.wgnet?.tagsAdmin) {

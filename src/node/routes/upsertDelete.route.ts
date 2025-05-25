@@ -20,6 +20,7 @@ import {
 	dbPeerIpNonKeySchema,
 	dbPeerLinkKeySchema,
 	dbPeerLinkNonKeySchema,
+	jsonSchema,
 } from "../database/types";
 import { generate32BytesKey } from "../keys";
 import { PeerAccess } from "../../common/peerConditions/accessRights";
@@ -34,8 +35,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:peer/allowedIPs/:ip/:netmask",
 		{
 			schema: {
-				params: dbPeerAllowedIpKeySchema,
-				body: dbPeerAllowedIpNonKeySchema,
+				params: jsonSchema(dbPeerAllowedIpKeySchema),
+				body: jsonSchema(dbPeerAllowedIpNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -49,7 +50,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/peers/:peer/allowedIPs/:ip/:netmask",
 		{
-			schema: { params: dbPeerAllowedIpKeySchema },
+			schema: { params: jsonSchema(dbPeerAllowedIpKeySchema) },
 		},
 		async (request, reply) => {
 			deletePeerAllowedIp({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
@@ -64,8 +65,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:peer/endpoints/:endpoint",
 		{
 			schema: {
-				params: dbPeerEndpointKeySchema,
-				body: dbPeerEndpointNonKeySchema,
+				params: jsonSchema(dbPeerEndpointKeySchema),
+				body: jsonSchema(dbPeerEndpointNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -79,7 +80,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/peers/:peer/endpoints/:endpoint",
 		{
-			schema: { params: dbPeerEndpointKeySchema },
+			schema: { params: jsonSchema(dbPeerEndpointKeySchema) },
 		},
 		async (request, reply) => {
 			deletePeerEndpoint({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
@@ -94,8 +95,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:peer/ips/:ip",
 		{
 			schema: {
-				params: dbPeerIpKeySchema,
-				body: dbPeerIpNonKeySchema,
+				params: jsonSchema(dbPeerIpKeySchema),
+				body: jsonSchema(dbPeerIpNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -109,7 +110,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/peers/:peer/ips/:ip",
 		{
-			schema: { params: dbPeerIpKeySchema },
+			schema: { params: jsonSchema(dbPeerIpKeySchema) },
 		},
 		async (request, reply) => {
 			deletePeerIp({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteOwnConfig) });
@@ -124,8 +125,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peerLinks/:peer1-:peer2",
 		{
 			schema: {
-				params: dbPeerLinkKeySchema,
-				body: dbPeerLinkNonKeySchema,
+				params: jsonSchema(dbPeerLinkKeySchema),
+				body: jsonSchema(dbPeerLinkNonKeySchema),
 			},
 		},
 		async (request, reply) => {
@@ -143,7 +144,7 @@ export default fastifyPlugin(async (fastify) => {
 	}>(
 		"/api/peerLinks/:peer1-:peer2",
 		{
-			schema: { params: dbPeerLinkKeySchema },
+			schema: { params: jsonSchema(dbPeerLinkKeySchema) },
 		},
 		async (request, reply) => {
 			deletePeerLink({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.WriteLink) });

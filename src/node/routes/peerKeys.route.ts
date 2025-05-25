@@ -1,7 +1,7 @@
 import type { KeyObject } from "crypto";
 import fastifyPlugin from "fastify-plugin";
 import type { DBPeerKey, DBPeerLinkKey, StringifiedBinary } from "../database/types";
-import { dbPeerKeySchema, dbPeerLinkKeySchema, dbPeerSchema } from "../database/types";
+import { dbPeerKeySchema, dbPeerLinkKeySchema, dbPeerSchema, jsonSchema } from "../database/types";
 import { derivePublicKey, extractKey, generateKeys, parsePrivateKey, parsePublicKey } from "../keys";
 import { PeerAccess } from "../../common/peerConditions/accessRights";
 
@@ -14,7 +14,7 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:id/privateKey",
 		{
 			schema: {
-				params: dbPeerKeySchema,
+				params: jsonSchema(dbPeerKeySchema),
 			},
 		},
 		async (request, reply) => reply.status(200).send(getPeerPrivateKey({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.ReadPrivateKey) })),
@@ -27,8 +27,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:id/privateKey",
 		{
 			schema: {
-				params: dbPeerKeySchema,
-				body: { privateKey: dbPeerSchema.privateKey },
+				params: jsonSchema(dbPeerKeySchema),
+				body: jsonSchema({ privateKey: dbPeerSchema.privateKey }),
 			},
 		},
 		async (request, reply) => {
@@ -58,8 +58,8 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peers/:id/publicKey",
 		{
 			schema: {
-				params: dbPeerKeySchema,
-				body: { publicKey: dbPeerSchema.publicKey },
+				params: jsonSchema(dbPeerKeySchema),
+				body: jsonSchema({ publicKey: dbPeerSchema.publicKey }),
 			},
 		},
 		async (request, reply) => {
@@ -80,7 +80,7 @@ export default fastifyPlugin(async (fastify) => {
 		"/api/peerLinks/:peer1-:peer2/presharedKey",
 		{
 			schema: {
-				params: dbPeerLinkKeySchema,
+				params: jsonSchema(dbPeerLinkKeySchema),
 			},
 		},
 		async (request, reply) => reply.status(200).send(getPeerLinkPresharedKey({ ...request.params, requestPeerCondition: request.peerCondition(PeerAccess.ReadLinkKey) })),

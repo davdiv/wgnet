@@ -1,6 +1,8 @@
 import type { IPAddress } from "../../common/ip";
 import type { BinaryKey } from "../../common/keys";
 
+export const jsonSchema = <T>(json: T) => ({ type: "object", properties: json });
+
 const typeString = { type: "string" };
 const typeNumber = { type: "number" };
 const typeStringOrNull = { type: ["string", "null"], default: null };

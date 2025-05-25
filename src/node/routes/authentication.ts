@@ -5,6 +5,7 @@ import fastifyPlugin from "fastify-plugin";
 import { formatBase64 } from "../../common/keys";
 import { type PeerAccessRight, type PeerAccess, getPeerCondition, reduceRights, fullPeerReadAccess } from "../../common/peerConditions/accessRights";
 import { generate32BytesKey } from "../keys";
+import { jsonSchema } from "../database/types";
 
 export interface UserInfo {
 	exp?: number;
@@ -119,11 +120,11 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 			"/login/",
 			{
 				schema: {
-					querystring: {
+					querystring: jsonSchema({
 						state: { type: "string" },
 						iss: { type: "string" },
 						code: { type: "string" },
-					},
+					}),
 				},
 			},
 			async (request, reply) => {
