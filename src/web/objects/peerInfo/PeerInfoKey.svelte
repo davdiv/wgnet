@@ -34,7 +34,7 @@
 		<span class="badge badge-primary"><PeerKeyInfoIcon {peer} /></span>
 	</svelte:fragment>
 	{#if !editKeys}
-		<div class="input input-ghost flex items-center gap-2">
+		<div class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">Private key</span>
 			{#key peer}
 				<ShowKey
@@ -45,7 +45,7 @@
 				/>
 			{/key}
 		</div>
-		<div class="input input-ghost flex items-center gap-2">
+		<div class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">Public key</span>
 			<input type="text" class="w-full" value={peer.publicKey} readonly />
 			{#if hasPeerAccess(peer, PeerAccess.WritePublicKey, $userInfo$.wgnet?.peerAccess)}
@@ -64,7 +64,7 @@
 				Note that setting the private key also sets the corresponding public key.
 			{/if}
 		</div>
-		<label class="input input-ghost flex items-center gap-2">
+		<label class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">{editKeys === "public" ? "Public key" : "Private key"}</span>
 			<EditKey secret={editKeys === "private"} updateKey={saveKey} cancel={() => editKeysClick(null)} />
 		</label>

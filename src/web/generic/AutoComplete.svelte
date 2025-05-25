@@ -16,7 +16,7 @@
 </script>
 
 <div class="dropdown dropdown-bottom {$$restProps.class ?? ''}">
-	<div class="input input-ghost flex gap-2 {inputClass}">
+	<div class="input input-ghost w-full flex gap-2 {inputClass}">
 		<input {...$$restProps} class="w-full" bind:value={$text$} use:hasFocusDirective use:navManagerDirective use:inputDirective />
 	</div>
 	{#if $showSuggestions$}

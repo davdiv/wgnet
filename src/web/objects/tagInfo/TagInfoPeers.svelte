@@ -22,7 +22,7 @@
 		<span class="badge badge-primary">{peers.length}</span>
 		{#if canHavePeerAccess(PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess)}
 			<AutoComplete
-				class="flex-grow"
+				class="grow"
 				placeholder="Add peer"
 				selectSuggestion={(peer) => {
 					setTags(peer.item.id, [...peer.item.tags, tag.id], peer.item.name);

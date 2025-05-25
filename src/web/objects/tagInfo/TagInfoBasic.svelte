@@ -30,15 +30,15 @@
 			updateTag(tagEdit);
 		}}
 	>
-		<label class="input input-ghost flex items-center gap-2">
+		<label class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">Name</span>
 			<InputText class="w-full" bind:value={tagEdit.name} {readonly} />
 		</label>
-		<label class="input input-ghost h-auto flex flex-col p-0">
-			<span class="font-bold flex-none px-4 pb-1">Description</span>
+		<label class="input input-ghost w-full h-auto flex flex-col p-0">
+			<span class="font-bold flex-none px-3 pb-1 self-start">Description</span>
 			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={tagEdit.description} {readonly} /></label
 		>
-		<label class="input input-ghost flex items-center gap-2">
+		<label class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">Color</span>
 			<!-- FIXME: it does not seem possible to have an input type color readonly, so using disabled instead here -->
 			<input type="color" class="w-full" bind:value={tagEdit.color} disabled={readonly} />

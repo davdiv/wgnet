@@ -10,7 +10,7 @@
 	$: linkInfo = $allPeerLinksMap$[linkId];
 </script>
 
-<div class="input input-ghost flex items-center gap-2">
+<div class="input input-ghost w-full flex items-center gap-2">
 	<span class="font-bold flex-none">Preshared key</span>
 	{#key linkInfo}
 		<KeyField

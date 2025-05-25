@@ -15,7 +15,7 @@
 </script>
 
 <svelte:window on:keydown={generalKeydown} />
-<label class="flex-1 flex gap-2 input input-ghost min-w-1 mx-2" use:hasFocusDirective>
+<label class="flex-1 flex gap-2 input input-ghost w-full min-w-1 mx-2" use:hasFocusDirective>
 	<FaIcon class="flex-none hidden sm:block" icon={faSearch} />
 	<input bind:this={input} class="flex-1 w-full" bind:value={$text$} use:inputDirective type="text" placeholder="Search" use:navManagerDirective />
 	<span class="flex-none hidden sm:block">

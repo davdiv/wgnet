@@ -21,7 +21,7 @@
 		<span class="badge badge-primary">{connectedPeersInfo.length}</span>
 		{#if hasPeerAccess(peer, PeerAccess.WriteLink, $userInfo$.wgnet?.peerAccess)}
 			<AutoComplete
-				class="flex-grow"
+				class="grow"
 				placeholder="Add link"
 				selectSuggestion={(otherPeer) => {
 					upsertPeerLink(createPeerLinkId(otherPeer.item.id, peer.id), "generate");
