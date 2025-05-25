@@ -77,7 +77,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 		}
 		const { jwks_uri, end_session_endpoint } = oidcMetadata;
 		const loginURL = publicUrl ? new URL("/login/", publicUrl).href : null;
-		const redirectUri = loginURL ? () => loginURL : (request: FastifyRequest) => new URL("/login/", `${request.protocol}://${request.hostname}`).href;
+		const redirectUri = loginURL ? () => loginURL : (request: FastifyRequest) => new URL("/login/", `${request.protocol}://${request.host}`).href;
 		fastify.register(fastifyJwtJwks, {
 			jwksUrl: jwks_uri,
 			audience: client_id,
@@ -100,14 +100,14 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 			request.user = fastify.jwt.decode(json.access_token)!;
 			if (json.refresh_token) {
 				reply.setCookie("auth_refresh", json.refresh_token, {
-					sameSite: "strict",
+					sameSite: "lax",
 					path: "/",
 					httpOnly: true,
 					secure: true,
 				});
 			}
 			reply.setCookie("auth", json.access_token, {
-				sameSite: "strict",
+				sameSite: "lax",
 				path: "/",
 				httpOnly: true,
 				secure: true,
@@ -144,7 +144,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 					const state = formatBase64(generate32BytesKey());
 					return reply
 						.setCookie("state", state, {
-							sameSite: "strict",
+							sameSite: "lax",
 							path: "/login/",
 							httpOnly: true,
 							secure: true,
@@ -216,7 +216,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 				delete payload.iat;
 				const cookie = fastify.jwt.sign(payload);
 				reply.setCookie("auth", cookie, {
-					sameSite: "strict",
+					sameSite: "lax",
 					path: "/",
 					httpOnly: true,
 					secure: true,
