@@ -17,7 +17,7 @@
 </script>
 
 <div class="toast toast-top toast-end mt-16 z-10">
-	{#each $toasts$ as toast}
+	{#each $toasts$ as toast (toast)}
 		<div class="alert {classes[toast.type]}">
 			<FaIcon icon={icons[toast.type]} />
 			<span>{toast.message}</span>

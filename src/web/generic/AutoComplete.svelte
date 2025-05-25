@@ -22,7 +22,7 @@
 	{#if $showSuggestions$}
 		<ul class="dropdown-content z-10 menu my-2 border p-2 shadow bg-base-100 rounded-box w-full" use:hasFocusDirective use:navManagerDirective>
 			{#if $suggestions$.length > 0}
-				{#each $suggestions$ as suggestion}
+				{#each $suggestions$ as suggestion (suggestion)}
 					<li>
 						<button
 							type="button"

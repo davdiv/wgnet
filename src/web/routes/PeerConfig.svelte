@@ -18,7 +18,7 @@
 			<span class="flex-none">Format:</span>
 			<select class="select select-ghost flex-none" bind:value={$format$}>
 				<option value=""></option>
-				{#each availableOutputFormats as possibleFormat}
+				{#each availableOutputFormats as possibleFormat (possibleFormat)}
 					<option value={possibleFormat}>{possibleFormat}</option>
 				{/each}
 			</select>

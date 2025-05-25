@@ -14,4 +14,4 @@
 	$: toModel($value$);
 </script>
 
-<textarea {...$$restProps} bind:value={$binding$} use:enableAutofocus={autofocus} {readonly} />
+<textarea {...$$restProps} bind:value={$binding$} use:enableAutofocus={autofocus} {readonly}></textarea>

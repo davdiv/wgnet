@@ -32,7 +32,7 @@
 					<FaIcon icon={faTrash} /><span class="hidden md:inline">Remove link</span>
 				</button>
 			{/if}
-			<div class="grow" />
+			<div class="grow"></div>
 			<button type="button" class="btn btn-ghost btn-sm flex-none" class:btn-active={showDetails} on:click={() => (showDetails = !showDetails)}><FaIcon icon={faGear} /></button>
 		{:else if canEdit}
 			<button type="button" class="btn btn-ghost btn-sm" on:click={() => upsertPeerLink(linkId, "generate")}><FaIcon icon={faPlusCircle} />Link peers</button>

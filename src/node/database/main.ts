@@ -1,4 +1,5 @@
-import { DatabaseSync, StatementSync } from "node:sqlite";
+import { DatabaseSync } from "node:sqlite";
+import type { StatementSync } from "node:sqlite";
 import { existsSync } from "fs";
 import { formatIP, formatIPCIDR, parseIP } from "../../common/ip";
 import { formatBase64, parse32BytesBase64, type BinaryKey } from "../../common/keys";
@@ -35,7 +36,7 @@ const checkInit = (db: DatabaseSync, fileName: string) => {
 	let result: undefined | { wgnetVersion: string };
 	try {
 		result = db.prepare("SELECT wgnetVersion FROM version").get() as any;
-	} catch (error) {
+	} catch {
 		throw new Error(`File '${fileName}' does not contain a wgnet database.`);
 	}
 	if (result?.wgnetVersion != DB_CURRENT_VERSION) {

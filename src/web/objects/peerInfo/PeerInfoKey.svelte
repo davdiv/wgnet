@@ -64,7 +64,6 @@
 				Note that setting the private key also sets the corresponding public key.
 			{/if}
 		</div>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">{editKeys === "public" ? "Public key" : "Private key"}</span>
 			<EditKey secret={editKeys === "private"} updateKey={saveKey} cancel={() => editKeysClick(null)} />

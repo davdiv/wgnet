@@ -58,7 +58,7 @@
 			<button class="btn btn-ghost btn-sm" on:click={() => ($value$ = [SimpleConditionType.PeerId, -1])}><FaIcon icon={faEdit} /></button>
 		{/if}
 	{:else}
-		{#each $value$ as subitem, index}
+		{#each $value$ as subitem, index (subitem)}
 			{#if index >= 1}
 				<svelte:self value$={itemWritable(value$, index)} />
 				{#if $value$[0] != ComposedConditionType.Not}

@@ -17,7 +17,7 @@
 		{#if value[0] === ComposedConditionType.Not}
 			<span class="mx-1">NOT</span>
 		{/if}
-		{#each value as operand, i}
+		{#each value as operand, i (operand)}
 			{#if i > 0}
 				{#if i > 1}
 					<span class="mx-1">{value[0] === ComposedConditionType.And ? "AND" : "OR"}</span>

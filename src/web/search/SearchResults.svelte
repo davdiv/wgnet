@@ -15,7 +15,7 @@
 {#if $showSuggestions$}
 	<div use:hasFocusDirective use:navManagerDirective class="fixed left-0 top-0 bottom-0 z-10 mt-16 bg-base-100 flex flex-col justify-items-stretch w-full overflow-y-auto">
 		{#if $suggestions$.length > 0}
-			{#each $suggestions$ as searchResult}
+			{#each $suggestions$ as searchResult (searchResult)}
 				{#if searchResult.type === "peer"}
 					<ListItemLink href={`/peers/${searchResult.item.id}`} onClick={itemClick}>
 						<PeerDisplay peer={searchResult.item} />

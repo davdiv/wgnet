@@ -10,4 +10,4 @@
 
 <FaIcon icon={faServer} />{peer.name}<PeerKeyInfoIcon {peer} />
 {#each peer.tags as tag (tag)}<Tag id={tag} />{/each}
-{#each peer.addresses as address}<span>{address.ip}</span>{/each}
+{#each peer.addresses as address (address)}<span>{address.ip}</span>{/each}

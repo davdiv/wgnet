@@ -14,7 +14,7 @@
 		let cidr;
 		try {
 			cidr = parseIPCIDR(newAllowedIP);
-		} catch (error) {
+		} catch {
 			addToast(`Invalid CIDR: ${newAllowedIP}`, ToastType.error);
 			return;
 		}
@@ -33,7 +33,7 @@
 	</svelte:fragment>
 	{#if peer.allowedIps.length > 0}
 		<div class="flex flex-col">
-			{#each peer.allowedIps as allowedIp}
+			{#each peer.allowedIps as allowedIp (allowedIp)}
 				<PeerInfoAllowedIPsItem {peer} {allowedIp} {canEdit} />
 			{/each}
 		</div>

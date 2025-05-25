@@ -14,7 +14,7 @@
 		let cidr;
 		try {
 			cidr = parseIPCIDR(newAddress);
-		} catch (error) {
+		} catch {
 			addToast(`Invalid CIDR: ${newAddress}`, ToastType.error);
 			return;
 		}
@@ -33,7 +33,7 @@
 	</svelte:fragment>
 	{#if peer.addresses.length > 0}
 		<div class="flex flex-col">
-			{#each peer.addresses as address}
+			{#each peer.addresses as address (address)}
 				<PeerInfoAddressesItem {peer} {address} {canEdit} />
 			{/each}
 		</div>

@@ -170,7 +170,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 					}
 					await fetchToken(request, reply, `grant_type=refresh_token&refresh_token=${encodeURIComponent(refreshToken)}`);
 				}
-			} catch (error) {
+			} catch {
 				if (new URL(request.url, "http://localhost").pathname === "/login/") {
 					return;
 				}
@@ -207,7 +207,7 @@ export default fastifyPlugin(async (fastify, authConfig: AuthenticationConfig) =
 					await request.jwtVerify();
 					newCookie = request.user.exp! * 1000 - Date.now() < 1000 * 60 * 5;
 				}
-			} catch (error) {
+			} catch {
 				return accessForbidden(reply);
 			}
 			if (newCookie) {

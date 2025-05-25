@@ -28,17 +28,14 @@
 			updatePeer(peerEdit);
 		}}
 	>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Name</span>
 			<InputText class="w-full" bind:value={peerEdit.name} {readonly} />
 		</label>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost h-auto flex flex-col p-0">
 			<span class="font-bold flex-none px-4 pb-1">Description</span>
 			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={peerEdit.description} {readonly} /></label
 		>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label class="input input-ghost flex items-center gap-2">
 			<span class="font-bold flex-none">Interface name</span>
 			<InputText class="w-full" bind:value={peerEdit.interfaceName} placeholder="wg0" {readonly} />

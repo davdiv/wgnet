@@ -15,7 +15,7 @@ export const createSearchByTagLogic = () => {
 		computed(() => {
 			try {
 				return JSON.parse(query$());
-			} catch (error) {
+			} catch {
 				return null;
 			}
 		}),
