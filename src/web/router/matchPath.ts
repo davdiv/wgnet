@@ -1,19 +1,13 @@
 import type { Key } from "path-to-regexp";
 import { pathToRegexp } from "path-to-regexp";
 
-const pathCache: Record<string, { regExp: RegExp; keys: Key[] }> = {};
+const pathCache: Record<string, { regexp: RegExp; keys: Key[] }> = {};
 
 export function compilePath(path: string, prefix = false) {
 	const cacheKey = `${path}-${prefix}`;
 	let result = pathCache[cacheKey];
 	if (!result) {
-		const keys: Key[] = [];
-		const regExp = pathToRegexp(path, keys, {
-			end: !prefix,
-			sensitive: true,
-			strict: true,
-		});
-		result = { regExp, keys };
+		result = pathToRegexp(path, { end: !prefix, sensitive: true });
 		pathCache[cacheKey] = result;
 	}
 	return result;
@@ -30,19 +24,18 @@ export function matchPath(pathname: string, paths: string | string[], prefix = f
 		paths = [paths];
 	}
 	for (const path of paths) {
-		const { regExp, keys } = compilePath(path, prefix);
-		const match = regExp.exec(pathname);
+		const { regexp, keys } = compilePath(path, prefix);
+		const match = regexp.exec(pathname);
 		if (match) {
 			const params: Record<string, string> = {};
 			for (let i = 0, l = keys.length; i < l; i++) {
 				const key = keys[i];
-				params[key.name] = match[i + 1];
+				const value = match[i + 1];
+				if (value != null) {
+					params[key.name] = value;
+				}
 			}
-			return {
-				path,
-				url: match[0],
-				params,
-			};
+			return { path, url: match[0], params };
 		}
 	}
 	return null;

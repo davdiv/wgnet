@@ -55,7 +55,7 @@ export const openDatabase = (options: DatabaseConfig) => {
 	const fileName = options.database;
 	const fileMustExist = options.fileMustExist || options.readonly || existsSync(fileName);
 	const readOnly = !!options.readonly;
-	const db = new DatabaseSync(fileName, { readOnly,  });
+	const db = new DatabaseSync(fileName, { readOnly });
 	db.exec("PRAGMA journal_mode = WAL");
 	// cipher is not deterministic as it contains a random part
 	db.function("cipher", { deterministic: false, directOnly: true }, (blob: any) => (readOnly ? failReadonly() : blob ? cipher(blob, encryptionKey) : null));

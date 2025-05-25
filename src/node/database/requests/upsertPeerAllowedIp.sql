@@ -10,7 +10,6 @@ FROM
 WHERE
 	id = @peer
 	AND matchPeerCondition (@requestPeerCondition, tags, @peer)
-ON CONFLICT (peer, ip, netmask) DO
-UPDATE
+ON CONFLICT (peer, ip, netmask) DO UPDATE
 SET
 	peerCondition = excluded.peerCondition

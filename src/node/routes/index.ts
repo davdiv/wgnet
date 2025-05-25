@@ -62,6 +62,7 @@ export const createServer = ({
 			useDefaults: false,
 			directives: {
 				"default-src": ["'self'"],
+				"img-src": ["'self'", "data:"],
 			},
 		},
 	});

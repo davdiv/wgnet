@@ -10,8 +10,7 @@ FROM
 WHERE
 	id = @peer
 	AND matchPeerCondition (@requestPeerCondition, tags, @peer)
-ON CONFLICT (peer, endpoint) DO
-UPDATE
+ON CONFLICT (peer, endpoint) DO UPDATE
 SET
 	priority = excluded.priority,
 	peerCondition = excluded.peerCondition

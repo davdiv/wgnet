@@ -9,7 +9,7 @@ import globals from "globals";
 /** @type any */
 const otherConfigs = [...tsEslint.configs.strict, ...eslintPluginSvelte.configs["flat/recommended"]];
 
-/** @type import("eslint").Linter.FlatConfig[] */
+/** @type import("eslint").Linter.Config[] */
 export default [
 	js.configs.recommended,
 	...otherConfigs,

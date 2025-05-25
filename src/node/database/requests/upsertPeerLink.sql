@@ -12,7 +12,6 @@ WHERE
 	AND peer2Info.id = @peer2
 	AND matchPeerCondition (@requestPeerCondition, peer1Info.tags, @peer1)
 	AND matchPeerCondition (@requestPeerCondition, peer2Info.tags, @peer2)
-ON CONFLICT (peer1, peer2) DO
-UPDATE
+ON CONFLICT (peer1, peer2) DO UPDATE
 SET
 	presharedKey = excluded.presharedKey

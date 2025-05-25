@@ -31,10 +31,10 @@
 		<LazyRoute path="/network" component={() => import("./routes/Network.svelte")} />
 		<LazyRoute path="/peers" component={() => import("./routes/AllPeers.svelte")} />
 		<LazyRoute path="/peers/:id" component={() => import("./routes/PeerInfo.svelte")} />
-		<LazyRoute path="/peers/:id/config/:format?" component={() => import("./routes/PeerConfig.svelte")} />
+		<LazyRoute path="/peers/:id/config&lbrace;/:format&rbrace;" component={() => import("./routes/PeerConfig.svelte")} />
 		<LazyRoute path="/tags" component={() => import("./routes/AllTags.svelte")} />
 		<LazyRoute path="/tags/:id" component={() => import("./routes/TagInfo.svelte")} />
-		<LazyRoute path="/searchByTag/:query?" component={() => import("./routes/SearchByTag.svelte")} />
+		<LazyRoute path="/searchByTag&lbrace;/:query&rbrace;" component={() => import("./routes/SearchByTag.svelte")} />
 		<LazyRoute path="/" component={() => import("./routes/Home.svelte")} />
 	</div>
 </div>
