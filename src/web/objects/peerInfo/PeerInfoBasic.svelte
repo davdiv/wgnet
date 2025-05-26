@@ -6,10 +6,11 @@
 	import InputText from "../../generic/InputText.svelte";
 	import Textarea from "../../generic/Textarea.svelte";
 	import { updatePeer } from "../../requests";
+	import type { DBPeer } from "../../../node/database/types";
 
-	let peerEdit: Omit<PeerInfo, "tags" | "publicKey" | "hasPrivateKey">;
-	const editPeer = ({ tags, publicKey, hasPrivateKey, ...peer }: PeerInfo) => {
-		peerEdit = { ...peer };
+	let peerEdit: Omit<DBPeer, "privateKey" | "publicKey" | "tags">;
+	const editPeer = ({ id, name, description, interfaceName, listenPort, fwMark }: PeerInfo) => {
+		peerEdit = { id, name, description, interfaceName, listenPort, fwMark };
 	};
 	export let peer: PeerInfo;
 	export let canEdit: boolean;
