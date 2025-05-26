@@ -1,8 +1,12 @@
 SELECT
+	peer.name as name,
 	peer.interfaceName as interfaceName,
 	peer.listenPort as listenPort,
 	peer.fwMark as fwMark,
-	formatBase64 (decipher (peer.privateKey)) as privateKey,
+	iif(
+		@withSecrets,
+		formatBase64 (decipher (peer.privateKey))
+	) as privateKey,
 	json_group_array(DISTINCT formatIPCIDR (ip.ip, ip.netmask)) FILTER (
 		WHERE
 			ip.ip NOTNULL

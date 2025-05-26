@@ -19,6 +19,8 @@ export const enum PeerAccess {
 export const fullPeerReadAccess = PeerAccess.ReadOwnConfig | PeerAccess.ReadPrivateKey | PeerAccess.ReadLink | PeerAccess.ReadLinkKey | PeerAccess.ReadFullConfig;
 export const fullPeerWriteAccess = fullPeerReadAccess | PeerAccess.WriteOwnConfig | PeerAccess.WritePrivateKey | PeerAccess.WritePublicKey | PeerAccess.WriteLink | PeerAccess.WriteTags;
 export const fullPeerAdminAccess = fullPeerWriteAccess | PeerAccess.CreateDelete;
+export const readFullConfigWithSecrets = PeerAccess.ReadFullConfig | PeerAccess.ReadPrivateKey | PeerAccess.ReadLinkKey;
+export const readFullConfigWithoutSecrets = PeerAccess.ReadFullConfig;
 
 export type PeerAccessRight = [PeerAccess, PeerCondition];
 

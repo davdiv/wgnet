@@ -73,7 +73,7 @@ export const setPeerPublicKey = async (id: number, publicKey: string | null, nam
 	addToast(`The key of ${name} was changed successfully.`, ToastType.success);
 	refresh();
 };
-export const getPeerConfig = async (id: number) => await callFetch<WgConfig>(`/api/peers/${id}/config`, "retrieving peer configuration");
+export const getPeerConfig = async (id: number, withSecrets: boolean) => await callFetch<WgConfig>(`/api/peers/${id}/config?withSecrets=${withSecrets}`, "retrieving peer configuration");
 
 export const addPeer = async (name: string, tags: number[]) => {
 	const { id } = await callFetch<{ id: number }>("/api/peers", `creating peer ${JSON.stringify(name)}`, {

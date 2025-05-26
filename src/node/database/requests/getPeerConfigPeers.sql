@@ -1,6 +1,11 @@
 SELECT
+	peer.name as name,
 	formatBase64 (peer.publicKey) as publicKey,
-	formatBase64 (decipher (link.presharedKey)) as presharedKey,
+	(link.presharedKey NOTNULL) as hasPSK,
+	iif(
+		@withSecrets,
+		formatBase64 (decipher (link.presharedKey))
+	) as presharedKey,
 	aggregateIPCIDR (
 		peerAllowedIps.ip,
 		peerAllowedIps.netmask,

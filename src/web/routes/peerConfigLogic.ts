@@ -1,6 +1,6 @@
 import { asWritable, computed, derived, untrack, writable, type ReadableSignal } from "@amadeus-it-group/tansu";
 import { promiseStoreToValueStore } from "../../common/promiseToStore";
-import { formatConfig, isValidOutputFormat, outputFormatExtension, outputFormatMimeType } from "../../common/wgConfig/format";
+import { formatConfig, isSecretOutputFormat, isValidOutputFormat, outputFormatExtension, outputFormatMimeType } from "../../common/wgConfig/format";
 import { refresh$ } from "../data";
 import { getPeerConfig } from "../requests";
 import { navigate } from "../router/locationStore";
@@ -34,12 +34,19 @@ export const createPeerConfigLogic = () => {
 			}
 			return null;
 		}),
-		(newFormat) => navigate(`/peers/${id$()}/config${newFormat ? `/${newFormat}` : ""}`),
+		(newFormat) => {
+			if (isSecretOutputFormat(newFormat) && !isSecretOutputFormat(format$())) {
+				showConfig$.set(false);
+			}
+			navigate(`/peers/${id$()}/config${newFormat ? `/${newFormat}` : ""}`);
+		},
 	);
+	const withSecrets$ = computed(() => isSecretOutputFormat(format$()));
 	const peerConfigPromise$ = computed(() => {
 		const id = id$();
+		const withSecrets = withSecrets$();
 		refresh$();
-		return untrack(() => getPeerConfig(id));
+		return untrack(() => getPeerConfig(id, withSecrets));
 	});
 	const config$ = promiseStoreToValueStore(peerConfigPromise$, null);
 	const formattedConfigPromise$ = computed(() => {
@@ -69,5 +76,5 @@ export const createPeerConfigLogic = () => {
 			return `${config?.interfaceName ?? "wg0"}${outputFormatExtension[format]}`;
 		}
 	});
-	return { matchParams$, format$, formattedConfig$, configURL$, configFileName$, showConfig$ };
+	return { matchParams$, format$, formattedConfig$, configURL$, configFileName$, showConfig$, withSecrets$ };
 };
