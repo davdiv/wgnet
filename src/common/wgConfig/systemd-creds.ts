@@ -9,7 +9,7 @@ export const getPSKSecretName = (config: WgConfig, peer: WgConfigPeer) => {
 };
 export const formatSystemdCreds = (config: WgConfig) => {
 	let res = "#!/bin/bash\n";
-	res += `alias encrypt="systemd-creds encrypt - "\n`;
+	res += `alias encrypt="systemd-creds encrypt"\n`;
 	res += `CREDSTORE="/etc/credstore.encrypted/"\n`;
 	if (config.privateKey) {
 		res += `echo -n "${formatBase64(config.privateKey)}" | encrypt - "$CREDSTORE/${getPrivateKeySecretName(config)}"\n`;
