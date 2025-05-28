@@ -43,8 +43,7 @@ export const formatNetworkManager = (config: WgConfig) => {
 			output += formatProperty("preshared-key", peer.presharedKey, formatBase64);
 			output += formatProperty("preshared-key-flags", 0);
 			output += formatProperty("allowed-ips", peer.allowedIPs, formatIPCIDRArray);
-			// FIXME: check if it is persistent-keep-alive?
-			output += formatProperty("persistent-keep-alive", peer.persistentKeepalive);
+			output += formatProperty("persistent-keepalive", peer.persistentKeepalive);
 		}
 	}
 
