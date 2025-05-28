@@ -1,7 +1,7 @@
 import type { BinaryOrStringIPCIDR } from "../../ip";
 import { formatIPCIDR } from "../../ip";
 import { formatBase64 } from "../../keys";
-import { getPrivateKeySecretName, getPSKSecretName } from "../systemd-creds";
+import { getPrivateKeySecretName, getPSKSecretName, getPublicKeySecretName } from "../systemd-creds";
 import type { WgConfig } from "../type";
 
 const basicFormatter = <T>(a: T) => `${a}`;
@@ -29,7 +29,11 @@ const formatSystemdNetworkdNetdev = (useSystemdCreds: boolean, config: WgConfig)
 	output += formatProperty("FirewallMark", config.fwMark);
 	for (const peer of config.peers ?? []) {
 		output += "\n[WireGuardPeer]\n";
-		output += formatProperty("PublicKey", peer.publicKey, formatBase64);
+		if (useSystemdCreds) {
+			output += formatProperty("PublicKey", "@" + getPublicKeySecretName(config, peer));
+		} else {
+			output += formatProperty("PublicKey", peer.publicKey, formatBase64);
+		}
 		if (useSystemdCreds && (peer.hasPSK || peer.presharedKey)) {
 			output += formatProperty("PresharedKey", "@" + getPSKSecretName(config, peer));
 		} else {
