@@ -1,5 +1,5 @@
 import type { BinaryOrStringIPCIDR } from "../../ip";
-import { formatIPCIDR } from "../../ip";
+import { formatIPCIDR, parseIPCIDR } from "../../ip";
 import { formatBase64 } from "../../keys";
 import type { WgConfig } from "../type";
 
@@ -13,6 +13,18 @@ const formatProperty = <T>(property: string, value: T | null | undefined, format
 };
 
 const formatIPCIDRArray = (array: BinaryOrStringIPCIDR[]) => array.map((item) => `${formatIPCIDR(item)};`).join("");
+
+const generateIpSection = (ips: BinaryOrStringIPCIDR[]) => {
+	const length = ips.length;
+	if (length === 0) {
+		return "method=disabled\n";
+	}
+	let output = "method=manual\n";
+	for (let i = 0; i < length; i++) {
+		output += `address${i + 1}=${formatIPCIDR(ips[i])}\n`;
+	}
+	return output;
+};
 
 export const formatNetworkManager = (config: WgConfig) => {
 	let output = `[connection]\n`;
@@ -35,6 +47,19 @@ export const formatNetworkManager = (config: WgConfig) => {
 			output += formatProperty("persistent-keep-alive", peer.persistentKeepalive);
 		}
 	}
-	// FIXME: add addresses
+
+	const ipv4: BinaryOrStringIPCIDR[] = [];
+	const ipv6: BinaryOrStringIPCIDR[] = [];
+	for (const address of config.address ?? []) {
+		const ip = parseIPCIDR(address);
+		(ip[0].length === 4 ? ipv4 : ipv6).push(address);
+	}
+
+	output += "\n[ipv4]\n";
+	output += generateIpSection(ipv4);
+
+	output += "\n[ipv6]\n";
+	output += generateIpSection(ipv6);
+
 	return output;
 };
