@@ -2,7 +2,7 @@
 	import { formatIP, parseIPCIDR } from "../../../common/ip";
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
 	import Collapse from "../../generic/Collapse.svelte";
-	import { addPeerIp } from "../../requests";
+	import { upsertPeerIp } from "../../requests";
 	import { ToastType, addToast } from "../../toasts/toasts";
 	import PeerInfoAddressesItem from "./PeerInfoAddressesItem.svelte";
 
@@ -18,7 +18,7 @@
 			addToast(`Invalid CIDR: ${newAddress}`, ToastType.error);
 			return;
 		}
-		await addPeerIp({ peer: peer.id, ip: formatIP(cidr[0]), netmask: cidr[1], peerCondition: null });
+		await upsertPeerIp({ peer: peer.id, ip: formatIP(cidr[0]), netmask: cidr[1], peerCondition: null });
 		newAddress = "";
 	};
 </script>

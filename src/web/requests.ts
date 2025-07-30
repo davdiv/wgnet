@@ -179,7 +179,7 @@ export const removePeerLink = async (peerLinkId: string) => {
 export const getPeerLinkPresharedKey = async (peerLinkId: string) =>
 	(await callFetch<Pick<StringifiedBinary<DBPeerLink>, "presharedKey">>(`/api/peerLinks/${peerLinkId}/presharedKey`, "retrieving preshared key")).presharedKey;
 
-export const addPeerIp = async ({ peer, ip, ...body }: StringifiedBinary<DBPeerIp>) => {
+export const upsertPeerIp = async ({ peer, ip, ...body }: StringifiedBinary<DBPeerIp>) => {
 	await callFetch(`/api/peers/${peer}/ips/${ip}`, `configuring IP address`, {
 		method: "PUT",
 		headers: jsonHeaders,
@@ -197,7 +197,7 @@ export const removePeerIp = async ({ peer, ip }: StringifiedBinary<DBPeerIpKey>)
 	refresh();
 };
 
-export const addPeerAllowedIp = async ({ peer, ip, netmask, ...body }: StringifiedBinary<DBPeerAllowedIp>) => {
+export const upsertPeerAllowedIp = async ({ peer, ip, netmask, ...body }: StringifiedBinary<DBPeerAllowedIp>) => {
 	await callFetch(`/api/peers/${peer}/allowedIPs/${ip}/${netmask}`, `configuring peer allowed ip`, {
 		method: "PUT",
 		headers: jsonHeaders,
@@ -215,7 +215,7 @@ export const removePeerAllowedIp = async ({ peer, ip, netmask }: StringifiedBina
 	refresh();
 };
 
-export const addPeerEndpoint = async ({ peer, endpoint, ...body }: StringifiedBinary<DBPeerEndpoint>) => {
+export const upsertPeerEndpoint = async ({ peer, endpoint, ...body }: StringifiedBinary<DBPeerEndpoint>) => {
 	await callFetch(`/api/peers/${peer}/endpoints/${endpoint}`, `configuring peer endpoint`, {
 		method: "PUT",
 		headers: jsonHeaders,

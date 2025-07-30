@@ -2,7 +2,7 @@
 	import { formatIP, parseIPCIDR } from "../../../common/ip";
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
 	import Collapse from "../../generic/Collapse.svelte";
-	import { addPeerAllowedIp } from "../../requests";
+	import { upsertPeerAllowedIp } from "../../requests";
 	import { ToastType, addToast } from "../../toasts/toasts";
 	import PeerInfoAllowedIPsItem from "./PeerInfoAllowedIPsItem.svelte";
 
@@ -18,7 +18,7 @@
 			addToast(`Invalid CIDR: ${newAllowedIP}`, ToastType.error);
 			return;
 		}
-		await addPeerAllowedIp({ peer: peer.id, ip: formatIP(cidr[0]), netmask: cidr[1], peerCondition: null });
+		await upsertPeerAllowedIp({ peer: peer.id, ip: formatIP(cidr[0]), netmask: cidr[1], peerCondition: null });
 		newAllowedIP = "";
 	};
 </script>

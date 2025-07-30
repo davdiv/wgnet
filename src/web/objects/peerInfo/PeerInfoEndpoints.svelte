@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
 	import Collapse from "../../generic/Collapse.svelte";
-	import { addPeerEndpoint } from "../../requests";
+	import { upsertPeerEndpoint } from "../../requests";
 	import PeerInfoEndpointItem from "./PeerInfoEndpointsItem.svelte";
 
 	export let peer: PeerInfo;
@@ -9,7 +9,7 @@
 
 	let newEndpoint = "";
 	const addEndpoint = async () => {
-		await addPeerEndpoint({ peer: peer.id, endpoint: newEndpoint, priority: 1, peerCondition: null });
+		await upsertPeerEndpoint({ peer: peer.id, endpoint: newEndpoint, priority: 1, peerCondition: null });
 		newEndpoint = "";
 	};
 </script>
