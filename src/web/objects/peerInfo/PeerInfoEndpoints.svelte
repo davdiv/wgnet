@@ -26,7 +26,7 @@
 	</svelte:fragment>
 	{#if peer.endpoints.length > 0}
 		<div class="flex flex-col">
-			{#each peer.endpoints as endpoint (endpoint)}
+			{#each peer.endpoints as endpoint (endpoint.endpoint)}
 				<PeerInfoEndpointItem {peer} {endpoint} {canEdit} />
 			{/each}
 		</div>

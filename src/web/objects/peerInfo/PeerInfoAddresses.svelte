@@ -33,7 +33,7 @@
 	</svelte:fragment>
 	{#if peer.addresses.length > 0}
 		<div class="flex flex-col">
-			{#each peer.addresses as address (address)}
+			{#each peer.addresses as address (address.ip)}
 				<PeerInfoAddressesItem {peer} {address} {canEdit} />
 			{/each}
 		</div>

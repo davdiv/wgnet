@@ -17,6 +17,8 @@ SELECT
 			'peerCondition',
 			ip.peerCondition
 		)
+		ORDER BY
+			ip.ip ASC
 	) FILTER (
 		WHERE
 			ip.ip NOTNULL
@@ -30,6 +32,9 @@ SELECT
 			'peerCondition',
 			endpoint.peerCondition
 		)
+		ORDER BY
+			endpoint.priority DESC,
+			endpoint.endpoint ASC
 	) FILTER (
 		WHERE
 			endpoint.endpoint NOTNULL
@@ -43,6 +48,8 @@ SELECT
 			'peerCondition',
 			allowedIp.peerCondition
 		)
+		ORDER BY
+			allowedIp.ip ASC
 	) FILTER (
 		WHERE
 			allowedIp.ip NOTNULL

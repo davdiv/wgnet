@@ -33,7 +33,7 @@
 	</svelte:fragment>
 	{#if peer.allowedIps.length > 0}
 		<div class="flex flex-col">
-			{#each peer.allowedIps as allowedIp (allowedIp)}
+			{#each peer.allowedIps as allowedIp (`${allowedIp.ip}/${allowedIp.netmask}`)}
 				<PeerInfoAllowedIPsItem {peer} {allowedIp} {canEdit} />
 			{/each}
 		</div>

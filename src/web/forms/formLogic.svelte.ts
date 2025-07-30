@@ -17,6 +17,7 @@ export interface Form<T, F extends object> {
 export interface FieldDefinition<T, F> {
 	getter: (formValue: T, fieldName: symbol | string | number) => F;
 	setter: (formValue: T, fieldValue: F, fieldName: symbol | string | number) => void;
+	validators?: ((formValue: T, fieldName: symbol | string | number) => void)[];
 }
 
 export const simpleField: FieldDefinition<any, string> = {
@@ -67,6 +68,9 @@ export const createForm = <T, F extends object>(param: FormParameters<T, F>): Fo
 			for (const [fieldName, fieldValue] of storage.entries() as MapIterator<[keyof F, any]>) {
 				try {
 					param.fields[fieldName].setter(value, fieldValue, fieldName);
+					for (const validator of param.fields[fieldName]?.validators ?? []) {
+						validator(value, fieldName);
+					}
 				} catch (error) {
 					if (!errors) {
 						errors = {};
