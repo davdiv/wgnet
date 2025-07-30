@@ -6,11 +6,11 @@
 	import PeerConditionDisplayItem from "../objects/peerConditions/PeerConditionDisplayItem.svelte";
 	import PeerConditionEditItem from "../objects/peerConditions/PeerConditionEditItem.svelte";
 	import type { Match } from "../router/matchPath";
-	import { createSearchByTagLogic } from "./searchByTagLogic";
+	import { createSearchLogic } from "./searchLogic";
 
 	export let match: Match;
 
-	const { matchParams$, queryForEdition$, simplifiedQuery$, queryValidForSearch$, searchResult$ } = createSearchByTagLogic();
+	const { matchParams$, queryForEdition$, simplifiedQuery$, queryValidForSearch$, searchResult$ } = createSearchLogic();
 
 	$: matchParams$.set(match.params as any);
 </script>

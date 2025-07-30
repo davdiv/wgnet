@@ -42,7 +42,7 @@
 				<Link href="/network" class="btn btn-ghost"><FaIcon icon={faDiagramProject} />Network</Link>
 				<Link href="/peers" class="btn btn-ghost"><FaIcon icon={faServer} />Peers</Link>
 				<Link href="/tags" class="btn btn-ghost"><FaIcon icon={faTags} />Tags</Link>
-				<Link href="/searchByTag" class="btn btn-ghost"><FaIcon icon={faSearch} />Search by tag</Link>
+				<Link href="/search" class="btn btn-ghost"><FaIcon icon={faSearch} />Search</Link>
 			</div>
 		</div>
 	</div>

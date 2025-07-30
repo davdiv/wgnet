@@ -34,7 +34,7 @@
 		<LazyRoute path="/peers/:id/config&lbrace;/:format&rbrace;" component={() => import("./routes/PeerConfig.svelte")} />
 		<LazyRoute path="/tags" component={() => import("./routes/AllTags.svelte")} />
 		<LazyRoute path="/tags/:id" component={() => import("./routes/TagInfo.svelte")} />
-		<LazyRoute path="/searchByTag&lbrace;/:query&rbrace;" component={() => import("./routes/SearchByTag.svelte")} />
+		<LazyRoute path="/search&lbrace;/:query&rbrace;" component={() => import("./routes/Search.svelte")} />
 		<LazyRoute path="/" component={() => import("./routes/Home.svelte")} />
 	</div>
 </div>
