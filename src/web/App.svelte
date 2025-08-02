@@ -9,6 +9,8 @@
 	import SearchField from "./search/SearchField.svelte";
 	import SearchResults from "./search/SearchResults.svelte";
 	import Toasts from "./toasts/Toasts.svelte";
+	import UnsavedChangesWarning from "./forms/UnsavedChangesWarning.svelte";
+	import { formsData } from "./forms/formData.svelte";
 </script>
 
 <NavBar>
@@ -19,7 +21,10 @@
 	{/if}
 	<SearchField />
 	<div class="flex-none">
-		<button type="button" class="btn btn-ghost text-xl" on:click={refresh} title="Refresh"><FaIcon icon={faRefresh}></FaIcon></button>
+		{#if formsData.size > 0}
+			<UnsavedChangesWarning></UnsavedChangesWarning>
+		{/if}
+		<button type="button" class="btn btn-ghost text-xl" onclick={refresh} title="Refresh"><FaIcon icon={faRefresh}></FaIcon></button>
 		<a class="btn btn-ghost text-xl" href="/logout" title="Logout"><FaIcon icon={faRightFromBracket}></FaIcon></a>
 	</div>
 </NavBar>
