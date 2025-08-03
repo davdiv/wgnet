@@ -8,6 +8,7 @@
 	import InputText from "../../generic/InputText.svelte";
 	import Textarea from "../../generic/Textarea.svelte";
 	import { updatePeer } from "../../requests";
+	import { fieldClass } from "../../forms/fieldClass";
 
 	const { peer, canEdit }: { peer: PeerInfo; canEdit: boolean } = $props();
 	const peerCopy = $derived.by(() => {
@@ -22,6 +23,9 @@
 		},
 		get formHref() {
 			return formHref;
+		},
+		get readonly() {
+			return readonly;
 		},
 		submit: updatePeer,
 		fields: {
@@ -39,27 +43,27 @@
 		<span class="flex-none">Basic properties</span>
 	</svelte:fragment>
 	<FormContainer {form}>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "name")]}>
 			<span class="font-bold flex-none">Name</span>
 			<InputText class="w-full" bind:value={form.fields.name} {readonly} />
 		</label>
-		<label class="input input-ghost w-full h-auto flex flex-col p-0">
+		<label class={["input w-full h-auto flex flex-col p-0", fieldClass(form, "description")]}>
 			<span class="font-bold flex-none px-3 pb-1 self-start">Description</span>
 			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={form.fields.description} {readonly} /></label
 		>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "interfaceName")]}>
 			<span class="font-bold flex-none">Interface name</span>
 			<InputText class="w-full" bind:value={form.fields.interfaceName} placeholder="wg0" {readonly} />
 		</label>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "listenPort")]}>
 			<span class="font-bold flex-none">Listen port</span>
 			<input type="number" class="w-full" bind:value={form.fields.listenPort} placeholder="0" {readonly} />
 		</label>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "fwMark")]}>
 			<span class="font-bold flex-none">Firewall mark</span>
 			<input type="number" class="w-full" bind:value={form.fields.fwMark} placeholder="none" {readonly} />
 		</label>
-		{#if !readonly}
+		{#if !readonly && form.changed}
 			<div class="flex gap-2 justify-end">
 				<button type="submit" class="btn btn-sm btn-primary"><FaIcon icon={faUpload} />Save</button>
 				<button type="button" class="btn btn-sm btn-secondary" onclick={form.reset}><FaIcon icon={faRotateLeft} />Reset</button>

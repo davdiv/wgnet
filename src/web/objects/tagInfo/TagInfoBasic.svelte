@@ -10,6 +10,7 @@
 	import Textarea from "../../generic/Textarea.svelte";
 	import { updateTag } from "../../requests";
 	import TagDisplay from "../TagDisplay.svelte";
+	import { fieldClass } from "../../forms/fieldClass";
 
 	const { tag }: { tag: TagInfo } = $props();
 
@@ -43,15 +44,15 @@
 		<span class="flex-none">Basic properties</span>
 	</svelte:fragment>
 	<FormContainer {form}>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "name")]}>
 			<span class="font-bold flex-none">Name</span>
 			<InputText class="w-full" bind:value={form.fields.name} {readonly} />
 		</label>
-		<label class="input input-ghost w-full h-auto flex flex-col p-0">
+		<label class={["input w-full h-auto flex flex-col p-0", fieldClass(form, "description")]}>
 			<span class="font-bold flex-none px-3 pb-1 self-start">Description</span>
 			<Textarea placeholder="Empty description" class="w-full px-4 h-16 outline-0 bg-transparent" bind:value={form.fields.description} {readonly} /></label
 		>
-		<label class="input input-ghost w-full flex items-center gap-2">
+		<label class={["input w-full flex items-center gap-2", fieldClass(form, "color")]}>
 			<span class="font-bold flex-none">Color</span>
 			<!-- FIXME: it does not seem possible to have an input type color readonly, so using disabled instead here -->
 			<input type="color" class="w-full" bind:value={form.fields.color} disabled={readonly} />
@@ -61,7 +62,7 @@
 		</label>
 		<div class="flex gap-2 items-center justify-end">
 			<TagDisplay class="mx-3" tag={form.modifiedValue} />
-			{#if !readonly}
+			{#if !readonly && form.changed}
 				<button type="submit" class="btn btn-sm btn-primary"><FaIcon icon={faUpload} />Save</button>
 				<button type="button" class="btn btn-sm btn-secondary" onclick={form.reset}><FaIcon icon={faRotateLeft} />Reset</button>
 			{/if}

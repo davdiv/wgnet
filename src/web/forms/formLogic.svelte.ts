@@ -1,10 +1,13 @@
 import { SvelteMap } from "svelte/reactivity";
 import { formsData } from "./formData.svelte";
 export type BooleansRecord<F extends object> = { readonly [K in keyof F]: boolean };
+export type Errors<F extends object> = null | { [K in keyof F]?: any };
 
 export interface Form<T, F extends object> {
 	fields: F;
 	fieldsChanged: BooleansRecord<F>;
+	changed: boolean;
+	errors: Errors<F>;
 	submit(): Promise<void>;
 	reset(): void;
 	originalValue: T;
@@ -27,7 +30,7 @@ export interface FormParameters<T, F extends object> {
 	formHref: string;
 	originalValue: T;
 	submit: (value: T) => Promise<void>;
-	readonly?: boolean;
+	readonly: boolean;
 	fields: { [K in keyof F]: FieldDefinition<T, F[K]> };
 }
 
@@ -57,23 +60,39 @@ export const createForm = <T, F extends object>(param: FormParameters<T, F>): Fo
 			get: () => changedValue,
 		});
 	}
-	const modifiedValue = $derived.by(() => {
+	const valueAndErrors = $derived.by(() => {
+		let errors: Errors<F> = null;
 		if (storage) {
-			const copy = { ...param.originalValue };
+			const value = { ...param.originalValue };
 			for (const [fieldName, fieldValue] of storage.entries() as MapIterator<[keyof F, any]>) {
-				param.fields[fieldName].setter(copy, fieldValue, fieldName);
+				try {
+					param.fields[fieldName].setter(value, fieldValue, fieldName);
+				} catch (error) {
+					if (!errors) {
+						errors = {};
+					}
+					errors[fieldName] = error;
+				}
 			}
-			return copy;
+			return { value, errors };
 		} else {
-			return param.originalValue;
+			return { value: param.originalValue, errors };
 		}
 	});
+	const modifiedValue = $derived(valueAndErrors.value);
+	const errors = $derived(valueAndErrors.errors);
 	const reset = () => {
 		formsData.delete(param.formHref);
 	};
 	return {
 		fields,
 		fieldsChanged,
+		get changed() {
+			return !!storage;
+		},
+		get errors() {
+			return errors;
+		},
 		get modifiedValue() {
 			return modifiedValue;
 		},
@@ -81,8 +100,10 @@ export const createForm = <T, F extends object>(param: FormParameters<T, F>): Fo
 			return param.originalValue;
 		},
 		async submit() {
-			await param.submit(modifiedValue);
-			reset();
+			if (!errors) {
+				await param.submit(modifiedValue);
+				reset();
+			}
 		},
 		reset,
 	};
