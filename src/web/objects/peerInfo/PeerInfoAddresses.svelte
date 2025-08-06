@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
 	import type { DBPeerIp, StringifiedBinary } from "../../../node/database/types";
 	import { cidrField } from "../../forms/cidrFieldLogic";
@@ -6,6 +7,7 @@
 	import FormContainer from "../../forms/FormContainer.svelte";
 	import { createForm } from "../../forms/formLogic.svelte";
 	import Collapse from "../../generic/Collapse.svelte";
+	import FaIcon from "../../generic/FaIcon.svelte";
 	import { upsertPeerIp } from "../../requests";
 	import PeerInfoAddressesItem from "./PeerInfoAddressesItem.svelte";
 
@@ -42,7 +44,12 @@
 		<span class="flex-none">Addresses</span>
 		<span class="badge badge-primary">{peer.addresses.length}</span>
 		{#if canEdit}
-			<FormContainer {form}><input class={["input w-full", fieldClass(form, "cidr")]} placeholder="Add CIDR" bind:value={form.fields.cidr} /></FormContainer>
+			<FormContainer {form}>
+				<label class={["input w-full", fieldClass(form, "cidr")]}>
+					<input placeholder="Add CIDR" bind:value={form.fields.cidr} />
+					{#if form.changed}<button title="Clear field" type="button" class="btn btn-link btn-sm" onclick={form.reset}><FaIcon icon={faCircleXmark} /></button>{/if}
+				</label>
+			</FormContainer>
 		{/if}
 	</svelte:fragment>
 	{#if peer.addresses.length > 0}
