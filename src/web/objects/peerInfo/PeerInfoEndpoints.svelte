@@ -1,17 +1,39 @@
 <script lang="ts">
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
+	import type { DBPeerEndpoint } from "../../../node/database/types";
+	import { fieldClass } from "../../forms/fieldClass";
+	import FormContainer from "../../forms/FormContainer.svelte";
+	import { createForm, simpleField } from "../../forms/formLogic.svelte";
 	import Collapse from "../../generic/Collapse.svelte";
 	import { upsertPeerEndpoint } from "../../requests";
 	import PeerInfoEndpointItem from "./PeerInfoEndpointsItem.svelte";
 
-	export let peer: PeerInfo;
-	export let canEdit: boolean;
+	const { peer, canEdit }: { peer: PeerInfo; canEdit: boolean } = $props();
 
-	let newEndpoint = "";
-	const addEndpoint = async () => {
-		await upsertPeerEndpoint({ peer: peer.id, endpoint: newEndpoint, priority: 1, peerCondition: null });
-		newEndpoint = "";
+	const checkDuplicateEndpoint = (value: Omit<DBPeerEndpoint, "peer">) => {
+		const newEndpoint = value.endpoint;
+		if (peer.endpoints.find(({ endpoint }) => endpoint === newEndpoint)) {
+			throw new Error(`Endpoint ${newEndpoint} already exists for this peer.`);
+		}
 	};
+
+	const readonly = $derived(!canEdit);
+	const formHref = $derived(`/peers/${peer.id}#/endpoints`);
+	const form = createForm({
+		originalValue: { endpoint: "", priority: 1, peerCondition: null },
+		get formHref() {
+			return formHref;
+		},
+		get readonly() {
+			return readonly;
+		},
+		async submit(value) {
+			await upsertPeerEndpoint({ ...value, peer: peer.id });
+		},
+		fields: {
+			endpoint: { ...simpleField, validators: [checkDuplicateEndpoint] },
+		},
+	});
 </script>
 
 <Collapse>
@@ -19,9 +41,7 @@
 		<span class="flex-none">Endpoints</span>
 		<span class="badge badge-primary">{peer.endpoints.length}</span>
 		{#if canEdit}
-			<form class="contents" on:submit|preventDefault={addEndpoint}>
-				<input class="input input-ghost w-full" placeholder="Add endpoint" bind:value={newEndpoint} />
-			</form>
+			<FormContainer {form}><input class={["input w-full", fieldClass(form, "endpoint")]} placeholder="Add endpoint" bind:value={form.fields.endpoint} /></FormContainer>
 		{/if}
 	</svelte:fragment>
 	{#if peer.endpoints.length > 0}

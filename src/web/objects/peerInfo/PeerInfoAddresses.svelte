@@ -1,26 +1,40 @@
 <script lang="ts">
-	import { formatIP, parseIPCIDR } from "../../../common/ip";
 	import type { PeerInfo } from "../../../node/database/requests/getAllPeers";
+	import type { DBPeerIp, StringifiedBinary } from "../../../node/database/types";
+	import { cidrField } from "../../forms/cidrFieldLogic";
+	import { fieldClass } from "../../forms/fieldClass";
+	import FormContainer from "../../forms/FormContainer.svelte";
+	import { createForm } from "../../forms/formLogic.svelte";
 	import Collapse from "../../generic/Collapse.svelte";
 	import { upsertPeerIp } from "../../requests";
-	import { ToastType, addToast } from "../../toasts/toasts";
 	import PeerInfoAddressesItem from "./PeerInfoAddressesItem.svelte";
 
-	export let peer: PeerInfo;
-	export let canEdit: boolean;
+	const { peer, canEdit }: { peer: PeerInfo; canEdit: boolean } = $props();
 
-	let newAddress = "";
-	const addAddress = async () => {
-		let cidr;
-		try {
-			cidr = parseIPCIDR(newAddress);
-		} catch {
-			addToast(`Invalid CIDR: ${newAddress}`, ToastType.error);
-			return;
+	const checkDuplicateIp = (value: Omit<StringifiedBinary<DBPeerIp>, "peer">) => {
+		const newIp = value.ip;
+		if (peer.addresses.find(({ ip }) => ip === newIp)) {
+			throw new Error(`IP ${newIp} already exists for this peer.`);
 		}
-		await upsertPeerIp({ peer: peer.id, ip: formatIP(cidr[0]), netmask: cidr[1], peerCondition: null });
-		newAddress = "";
 	};
+
+	const readonly = $derived(!canEdit);
+	const formHref = $derived(`/peers/${peer.id}#/addresses`);
+	const form = createForm({
+		originalValue: { ip: "", netmask: NaN, peerCondition: null },
+		get formHref() {
+			return formHref;
+		},
+		get readonly() {
+			return readonly;
+		},
+		async submit(value) {
+			await upsertPeerIp({ ...value, peer: peer.id });
+		},
+		fields: {
+			cidr: { ...cidrField, validators: [checkDuplicateIp] },
+		},
+	});
 </script>
 
 <Collapse>
@@ -28,7 +42,7 @@
 		<span class="flex-none">Addresses</span>
 		<span class="badge badge-primary">{peer.addresses.length}</span>
 		{#if canEdit}
-			<form class="contents" on:submit|preventDefault={addAddress}><input class="input input-ghost w-full" placeholder="Add CIDR" bind:value={newAddress} /></form>
+			<FormContainer {form}><input class={["input w-full", fieldClass(form, "cidr")]} placeholder="Add CIDR" bind:value={form.fields.cidr} /></FormContainer>
 		{/if}
 	</svelte:fragment>
 	{#if peer.addresses.length > 0}
