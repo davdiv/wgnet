@@ -6,6 +6,8 @@
 	import { formsData } from "./formData.svelte";
 
 	import { closePopup, hasFocusDirective, navDirective, showPopup$ } from "./unsavedChangesLogic";
+	import FaIcon from "../generic/FaIcon.svelte";
+	import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 
 	const urls = $derived.by(() => {
 		const result = new SvelteSet<string>();
@@ -14,6 +16,14 @@
 		}
 		return result;
 	});
+
+	const removeChanges = (urlToRemove: string) => {
+		for (const url of formsData.keys()) {
+			if (urlToRemove === url.split("#", 1)[0]) {
+				formsData.delete(url);
+			}
+		}
+	};
 </script>
 
 {#if $showPopup$}
@@ -27,6 +37,9 @@
 				{:else}
 					{url}
 				{/if}
+				{#snippet actions()}
+					<button type="button" class="btn btn-sm btn-ghost me-3" title="Reset changes" onclick={() => removeChanges(url)}><FaIcon icon={faRotateLeft} /></button>
+				{/snippet}
 			</ListItemLink>
 		{/each}
 	</div>
