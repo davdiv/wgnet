@@ -11,6 +11,7 @@
 	import Toasts from "./toasts/Toasts.svelte";
 	import UnsavedChangesWarning from "./forms/UnsavedChangesWarning.svelte";
 	import { formsData } from "./forms/formData.svelte";
+	import UnsavedChangesList from "./forms/UnsavedChangesList.svelte";
 </script>
 
 <NavBar>
@@ -29,6 +30,7 @@
 	</div>
 </NavBar>
 <SearchResults />
+<UnsavedChangesList />
 <Toasts />
 <div class="flex flex-col min-h-dvh w-full absolute top-0">
 	<div class="h-16"></div>
