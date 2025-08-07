@@ -7,7 +7,7 @@ import tsEslint from "typescript-eslint";
 import globals from "globals";
 
 /** @type any */
-const otherConfigs = [...tsEslint.configs.strict, ...eslintPluginSvelte.configs["flat/recommended"]];
+const otherConfigs = [...tsEslint.configs.strict, ...eslintPluginSvelte.configs.recommended];
 
 /** @type import("eslint").Linter.Config[] */
 export default [
@@ -26,6 +26,7 @@ export default [
 		},
 		rules: {
 			"svelte/no-at-html-tags": "off",
+			"svelte/valid-compile": "error",
 			"prefer-const": ["error", { destructuring: "all" }],
 			"@typescript-eslint/prefer-literal-enum-member": ["error", { allowBitwiseExpressions: true }],
 			"@typescript-eslint/no-extra-non-null-assertion": "off",
