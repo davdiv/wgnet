@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { faRotateLeft, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
+	import { faRotateLeft, faUpload } from "@fortawesome/free-solid-svg-icons";
 	import type { TagInfo } from "../../../node/database/requests/getAllTags";
 	import { userInfo$ } from "../../data";
+	import { fieldClass } from "../../forms/fieldClass";
 	import FormContainer from "../../forms/FormContainer.svelte";
 	import { type FieldDefinition, createForm, simpleField } from "../../forms/formLogic.svelte";
 	import Collapse from "../../generic/Collapse.svelte";
+	import ColorField from "../../generic/ColorField.svelte";
 	import FaIcon from "../../generic/FaIcon.svelte";
 	import InputText from "../../generic/InputText.svelte";
 	import Textarea from "../../generic/Textarea.svelte";
 	import { updateTag } from "../../requests";
 	import TagDisplay from "../TagDisplay.svelte";
-	import { fieldClass } from "../../forms/fieldClass";
 
 	const { tag }: { tag: TagInfo } = $props();
 
@@ -34,9 +35,6 @@
 			color: simpleField as FieldDefinition<any, string | null>,
 		},
 	});
-	const removeColor = () => {
-		form.fields.color = null;
-	};
 </script>
 
 <Collapse>
@@ -54,11 +52,7 @@
 		>
 		<label class={["input w-full flex items-center gap-2", fieldClass(form, "color")]}>
 			<span class="font-bold flex-none">Color</span>
-			<!-- FIXME: it does not seem possible to have an input type color readonly, so using disabled instead here -->
-			<input type="color" class="w-full" bind:value={form.fields.color} disabled={readonly} />
-			{#if form.fields.color != null && !readonly}
-				<button type="button" class="btn btn-sm btn-ghost" onclick={removeColor}><FaIcon icon={faXmark} /></button>
-			{/if}
+			<ColorField bind:value={form.fields.color} {readonly} />
 		</label>
 		<div class="flex gap-2 items-center justify-end">
 			<TagDisplay class="mx-3" tag={form.modifiedValue} />
