@@ -7,14 +7,14 @@
 	import TagInfoBasic from "./TagInfoBasic.svelte";
 	import TagInfoPeers from "./TagInfoPeers.svelte";
 
-	export let tag: TagInfo;
+	const { tag }: { tag: TagInfo } = $props();
 </script>
 
 <div class="flex flex-col p-3 gap-2">
 	<div class="flex gap-2 text-xl font-bold items-center">
 		<FaIcon icon={faTag} /><span class="grow">{tag.name}</span>
 		{#if $userInfo$.wgnet?.tagsAdmin}
-			<button type="button" class="btn btn-sm btn-error" title="Remove tag" on:click={() => removeTag(tag.id, tag.name)}><FaIcon icon={faTrash} /><span class="hidden sm:inline">Remove</span></button>
+			<button type="button" class="btn btn-sm btn-error" title="Remove tag" onclick={() => removeTag(tag.id, tag.name)}><FaIcon icon={faTrash} /><span class="hidden sm:inline">Remove</span></button>
 		{/if}
 	</div>
 	<TagInfoBasic {tag} />

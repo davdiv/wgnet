@@ -3,7 +3,7 @@
 	import { ComposedConditionType, SimpleConditionType, type PeerCondition } from "../../../common/peerConditions/evaluate";
 	import { bindType } from "./utils";
 
-	export let value$: WritableSignal<PeerCondition>;
+	const { value$ }: { value$: WritableSignal<PeerCondition> } = $props();
 	const type$ = bindType(value$);
 </script>
 

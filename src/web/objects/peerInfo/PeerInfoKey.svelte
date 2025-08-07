@@ -29,10 +29,10 @@
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Key</span>
 		<span class="badge badge-primary"><PeerKeyInfoIcon {peer} /></span>
-	</svelte:fragment>
+	{/snippet}
 	{#if !editKeys}
 		<div class="input input-ghost w-full flex items-center gap-2">
 			<span class="font-bold flex-none">Private key</span>

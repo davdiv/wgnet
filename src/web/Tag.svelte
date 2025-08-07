@@ -1,14 +1,15 @@
 <script lang="ts">
-	import TagDisplay from "./objects/TagDisplay.svelte";
+	import type { HTMLAttributes } from "svelte/elements";
 	import { allTagsMap$ } from "./data";
+	import TagDisplay from "./objects/TagDisplay.svelte";
 
-	export let id: number;
+	const { id, ...rest }: { id: number } & Omit<HTMLAttributes<HTMLDivElement>, "id"> = $props();
 
-	$: tagInfo = $allTagsMap$[id];
+	const tagInfo = $derived($allTagsMap$[id]);
 </script>
 
 {#if tagInfo}
-	<TagDisplay tag={tagInfo} {...$$restProps} />
+	<TagDisplay {...rest} tag={tagInfo} />
 {:else}
-	<div {...$$restProps} class="badge badge-info {$$restProps.class}">{id}</div>
+	<div {...rest} class={["badge badge-info", rest.class]}>{id}</div>
 {/if}

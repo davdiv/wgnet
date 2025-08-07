@@ -39,7 +39,7 @@
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Endpoints</span>
 		<span class="badge badge-primary">{peer.endpoints.length}</span>
 		{#if canEdit}
@@ -50,7 +50,7 @@
 				</label>
 			</FormContainer>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 	{#if peer.endpoints.length > 0}
 		<div class="flex flex-col">
 			{#each peer.endpoints as endpoint (endpoint.endpoint)}

@@ -2,13 +2,21 @@
 	import EditKey from "./EditKey.svelte";
 	import ShowKey from "./ShowKey.svelte";
 
-	export let retrieveSecret: undefined | (() => Promise<string | null>) = undefined;
-	export let generateSecret: undefined | (() => void) = undefined;
-	export let removeSecret: undefined | (() => void) = undefined;
-	export let updateKey: undefined | ((value: string | null) => void | Promise<void>) = undefined;
-	export let hasSecret: boolean;
+	const {
+		retrieveSecret = undefined,
+		generateSecret = undefined,
+		removeSecret = undefined,
+		updateKey = undefined,
+		hasSecret,
+	}: {
+		retrieveSecret?: undefined | (() => Promise<string | null>);
+		generateSecret?: undefined | (() => void);
+		removeSecret?: undefined | (() => void);
+		updateKey?: undefined | ((value: string | null) => void | Promise<void>);
+		hasSecret: boolean;
+	} = $props();
 
-	let editKey = false;
+	let editKey = $state(false);
 
 	const callUpdateKey = async (value: string | null) => {
 		if (updateKey) {

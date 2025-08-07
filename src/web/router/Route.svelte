@@ -1,13 +1,19 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
 	import { navigate, pathname$ } from "./locationStore";
 	import type { Match } from "./matchPath";
 	import { matchPath } from "./matchPath";
 
-	export let component: any = undefined;
-	export let args: any = {};
-	export let prefix = false;
-	export let path: string | string[] = [];
-	export let redirect: null | string | ((match: Match) => string) = null;
+	interface Props {
+		component?: any;
+		args?: any;
+		prefix?: boolean;
+		path?: string | string[];
+		redirect?: null | string | ((match: Match) => string);
+		children?: Snippet<[{ match: Match }]>;
+	}
+
+	const { component = undefined, args = {}, prefix = false, path = [], redirect = null, children }: Props = $props();
 
 	function executeRedirect(match: Match | null, redirect: null | string | ((match: Match) => string)) {
 		if (match && redirect) {
@@ -20,14 +26,16 @@
 		}
 	}
 
-	let match: Match | null;
-	$: match = matchPath($pathname$, path, prefix);
+	const match: Match | null = $derived(matchPath($pathname$, path, prefix));
 
-	$: executeRedirect(match, redirect);
+	$effect(() => {
+		executeRedirect(match, redirect);
+	});
 </script>
 
 {#if match}
-	<slot {match}>
-		<svelte:component this={component} {...args} {match} />
-	</slot>
+	{@const SvelteComponent = component}
+	{#if children}{@render children({ match })}{:else}
+		<SvelteComponent {...args} {match} />
+	{/if}
 {/if}

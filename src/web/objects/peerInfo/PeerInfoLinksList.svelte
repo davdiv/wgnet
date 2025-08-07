@@ -4,8 +4,8 @@
 	import PeerInfoLinksItem from "./PeerInfoLinksItem.svelte";
 
 	const navigation = createListNavigation();
-	export let peer1: PeerInfo;
-	export let peers2: PeerInfo[];
+
+	const { peer1, peers2 }: { peer1: PeerInfo; peers2: PeerInfo[] } = $props();
 </script>
 
 <div class="flex flex-col gap-1" use:navigation>

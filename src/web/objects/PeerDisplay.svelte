@@ -5,7 +5,7 @@
 	import Tag from "../Tag.svelte";
 	import PeerKeyInfoIcon from "./PeerKeyInfoIcon.svelte";
 
-	export let peer: PeerInfo;
+	const { peer }: { peer: PeerInfo } = $props();
 </script>
 
 <FaIcon icon={faServer} />{peer.name}<PeerKeyInfoIcon {peer} />

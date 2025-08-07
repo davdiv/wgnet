@@ -1,15 +1,16 @@
 <script lang="ts">
+	import type { HTMLAnchorAttributes, MouseEventHandler } from "svelte/elements";
 	import { navigate } from "./locationStore";
 
-	export let href: undefined | string = undefined;
-	export let onClick: undefined | ((event: MouseEvent) => void) = undefined;
+	const { href, onclick, children, ...rest }: HTMLAnchorAttributes = $props();
 
-	const onClickHandler = (event: MouseEvent) => {
-		onClick?.(event);
+	const onClickHandler: MouseEventHandler<HTMLAnchorElement> = (event) => {
+		event.preventDefault();
+		onclick?.(event);
 		if (href) navigate(href);
 	};
 </script>
 
-<a on:click|preventDefault={onClickHandler} href={href ?? "javascript:void(0);"} {...$$restProps}>
-	<slot />
+<a {...rest} onclick={onClickHandler} href={href ?? "javascript:void(0);"}>
+	{@render children?.()}
 </a>

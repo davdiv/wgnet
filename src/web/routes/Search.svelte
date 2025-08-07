@@ -8,20 +8,23 @@
 	import type { Match } from "../router/matchPath";
 	import { createSearchLogic } from "./searchLogic";
 
-	export let match: Match;
+	const { match }: { match: Match } = $props();
 
 	const { matchParams$, queryForEdition$, simplifiedQuery$, queryValidForSearch$, searchResult$ } = createSearchLogic();
 
-	$: matchParams$.set(match.params as any);
+	$matchParams$ = match.params as any;
+	$effect(() => {
+		$matchParams$ = match.params as any;
+	});
 </script>
 
 <div class="flex flex-col p-3 gap-2">
 	<Collapse>
-		<svelte:fragment slot="title">Query</svelte:fragment>
+		{#snippet title()}Query{/snippet}
 		<PeerConditionEditItem value$={queryForEdition$} />
 	</Collapse>
 	<Collapse>
-		<svelte:fragment slot="title">Simplified query</svelte:fragment>
+		{#snippet title()}Simplified query{/snippet}
 		{#if $simplifiedQuery$}
 			<PeerConditionDisplayItem value={$simplifiedQuery$} />
 		{:else}
@@ -29,18 +32,18 @@
 		{/if}
 	</Collapse>
 	<Collapse>
-		<svelte:fragment slot="title">JSON query</svelte:fragment>
+		{#snippet title()}JSON query{/snippet}
 		<textarea class="textarea-ghost p-3 font-mono" readonly>{JSON.stringify($queryForEdition$)}</textarea>
 	</Collapse>
 	<Collapse>
-		<svelte:fragment slot="title">JSON simplified query</svelte:fragment>
+		{#snippet title()}JSON simplified query{/snippet}
 		<textarea class="textarea-ghost p-3 font-mono" readonly>{JSON.stringify($simplifiedQuery$)}</textarea>
 	</Collapse>
 	<Collapse>
-		<svelte:fragment slot="title">
+		{#snippet title()}
 			<span class="flex-none">Search results</span>
 			<span class="badge badge-primary">{$searchResult$.length}</span>
-		</svelte:fragment>
+		{/snippet}
 		{#if $searchResult$.length > 0}
 			<Peers peers={$searchResult$} />
 		{:else if !$queryValidForSearch$}

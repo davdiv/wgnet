@@ -5,11 +5,14 @@
 	import type { Match } from "../router/matchPath";
 	import { createPeerConfigLogic } from "./peerConfigLogic";
 
-	export let match: Match;
+	const { match }: { match: Match } = $props();
 
 	const { matchParams$, format$, formattedConfig$, configURL$, configFileName$, showConfig$ } = createPeerConfigLogic();
 
-	$: matchParams$.set(match.params as any);
+	$matchParams$ = match.params as any;
+	$effect(() => {
+		$matchParams$ = match.params as any;
+	});
 
 	const warningIcon = "\u26A0";
 </script>
@@ -29,7 +32,7 @@
 			<button
 				type="button"
 				class="btn btn-ghost"
-				on:click={() => {
+				onclick={() => {
 					$showConfig$ = !$showConfig$;
 				}}
 				><FaIcon icon={$showConfig$ ? faEyeSlash : faEye} /><span class="hidden sm:inline"

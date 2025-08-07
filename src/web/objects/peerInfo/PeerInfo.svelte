@@ -14,16 +14,20 @@
 	import { PeerAccess, hasPeerAccess } from "../../../common/peerConditions/accessRights";
 	import { userInfo$ } from "../../data";
 
-	export let peer: PeerInfo;
+	interface Props {
+		peer: PeerInfo;
+	}
 
-	$: canEdit = hasPeerAccess(peer, PeerAccess.WriteOwnConfig, $userInfo$.wgnet?.peerAccess);
+	const { peer }: Props = $props();
+
+	const canEdit = $derived(hasPeerAccess(peer, PeerAccess.WriteOwnConfig, $userInfo$.wgnet?.peerAccess));
 </script>
 
 <div class="flex flex-col p-3 gap-2">
 	<div class="flex gap-2 text-xl font-bold items-center">
 		<FaIcon icon={faServer} /><span class="grow">{peer.name}</span>
 		{#if hasPeerAccess(peer, PeerAccess.CreateDelete, $userInfo$.wgnet?.peerAccess)}
-			<button type="button" class="btn btn-sm btn-error" title="Remove peer" on:click={() => removePeer(peer.id, peer.name)}>
+			<button type="button" class="btn btn-sm btn-error" title="Remove peer" onclick={() => removePeer(peer.id, peer.name)}>
 				<FaIcon icon={faTrash} /><span class="hidden sm:inline">Remove</span>
 			</button>
 		{/if}

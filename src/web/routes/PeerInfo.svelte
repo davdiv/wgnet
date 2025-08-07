@@ -1,13 +1,13 @@
 <script lang="ts">
-	import PeerInfo from "../objects/peerInfo/PeerInfo.svelte";
-	import type { Match } from "../router/matchPath";
+	import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 	import { allPeersMap$ } from "../data";
 	import FaIcon from "../generic/FaIcon.svelte";
-	import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+	import PeerInfo from "../objects/peerInfo/PeerInfo.svelte";
+	import type { Match } from "../router/matchPath";
 
-	export let match: Match;
+	const { match }: { match: Match } = $props();
 
-	$: peer = $allPeersMap$[+match.params.id];
+	const peer = $derived($allPeersMap$[+match.params.id]);
 </script>
 
 {#if peer}

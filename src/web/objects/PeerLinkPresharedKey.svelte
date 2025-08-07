@@ -3,11 +3,9 @@
 	import KeyField from "../generic/key/KeyField.svelte";
 	import { getPeerLinkPresharedKey, upsertPeerLink } from "../requests";
 
-	export let linkId: string;
-	export let canEdit: boolean;
-	export let canViewKey: boolean;
+	const { linkId, canEdit, canViewKey }: { linkId: string; canEdit: boolean; canViewKey: boolean } = $props();
 
-	$: linkInfo = $allPeerLinksMap$[linkId];
+	const linkInfo = $derived($allPeerLinksMap$[linkId]);
 </script>
 
 <div class="input input-ghost w-full flex items-center gap-2">

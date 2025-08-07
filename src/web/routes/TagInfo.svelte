@@ -1,13 +1,13 @@
 <script lang="ts">
-	import TagInfo from "../objects/tagInfo/TagInfo.svelte";
-	import type { Match } from "../router/matchPath";
+	import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 	import { allTagsMap$ } from "../data";
 	import FaIcon from "../generic/FaIcon.svelte";
-	import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+	import TagInfo from "../objects/tagInfo/TagInfo.svelte";
+	import type { Match } from "../router/matchPath";
 
-	export let match: Match;
+	const { match }: { match: Match } = $props();
 
-	$: tag = $allTagsMap$[+match.params.id];
+	const tag = $derived($allTagsMap$[+match.params.id]);
 </script>
 
 {#if tag}

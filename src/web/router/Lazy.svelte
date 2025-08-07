@@ -1,13 +1,21 @@
 <script lang="ts">
-	export let component: () => Promise<{ default: any }>;
-	export let args: any = {};
-	$: promise = component();
+	import type { Snippet } from "svelte";
+
+	interface Props {
+		component: () => Promise<{ default: any }>;
+		args?: any;
+		children?: Snippet;
+		error?: Snippet;
+	}
+
+	const { component, args = {}, children, error }: Props = $props();
+	const promise = $derived(component());
 </script>
 
 {#await promise}
-	<slot />
+	{@render children?.()}
 {:then resolvedComponent}
-	<svelte:component this={resolvedComponent.default} {...args} />
+	<resolvedComponent.default {...args} />
 {:catch}
-	<slot name="error" />
+	{@render error?.()}
 {/await}

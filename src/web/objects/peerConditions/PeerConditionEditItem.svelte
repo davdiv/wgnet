@@ -11,6 +11,7 @@
 	import { searchPeers, searchTags, type ItemWithScore } from "../../search/search";
 	import PeerDisplay from "../PeerDisplay.svelte";
 	import TagDisplay from "../TagDisplay.svelte";
+	import PeerConditionEditItem from "./PeerConditionEditItem.svelte";
 	import PeerConditionType from "./PeerConditionType.svelte";
 	import { itemWritable } from "./utils";
 
@@ -33,7 +34,7 @@
 		});
 	};
 
-	export let value$: WritableSignal<PeerCondition>;
+	const { value$ }: { value$: WritableSignal<PeerCondition> } = $props();
 </script>
 
 <span class="border border-2 border-slate-300 m-1 inline-block">
@@ -41,33 +42,37 @@
 
 	{#if isTagCondition($value$)}
 		{#if $value$[1] === -1}
-			<AutoComplete placeholder="Search tag..." inputClass="input-sm m-2" getSuggestions={searchTags} selectSuggestion={selectTag} let:suggestion>
-				<TagDisplay tag={suggestion.item} />
+			<AutoComplete placeholder="Search tag..." inputClass="input-sm m-2" getSuggestions={searchTags} selectSuggestion={selectTag}>
+				{#snippet children({ suggestion })}
+					<TagDisplay tag={suggestion.item} />
+				{/snippet}
 			</AutoComplete>
 		{:else}
 			<Tag id={$value$[1]} />
-			<button class="btn btn-ghost btn-sm" on:click={() => ($value$ = [SimpleConditionType.Tag, -1])}><FaIcon icon={faEdit} /></button>
+			<button class="btn btn-ghost btn-sm" onclick={() => ($value$ = [SimpleConditionType.Tag, -1])}><FaIcon icon={faEdit} /></button>
 		{/if}
 	{:else if isPeerIdCondition($value$)}
 		{#if $value$[1] === -1}
-			<AutoComplete placeholder="Search peer..." inputClass="input-sm m-2" getSuggestions={searchPeers} selectSuggestion={selectPeer} let:suggestion>
-				<PeerDisplay peer={suggestion.item} />
+			<AutoComplete placeholder="Search peer..." inputClass="input-sm m-2" getSuggestions={searchPeers} selectSuggestion={selectPeer}>
+				{#snippet children({ suggestion })}
+					<PeerDisplay peer={suggestion.item} />
+				{/snippet}
 			</AutoComplete>
 		{:else}
 			<Peer id={$value$[1]} />
-			<button class="btn btn-ghost btn-sm" on:click={() => ($value$ = [SimpleConditionType.PeerId, -1])}><FaIcon icon={faEdit} /></button>
+			<button class="btn btn-ghost btn-sm" onclick={() => ($value$ = [SimpleConditionType.PeerId, -1])}><FaIcon icon={faEdit} /></button>
 		{/if}
 	{:else}
 		{#each $value$ as subitem, index (subitem)}
 			{#if index >= 1}
-				<svelte:self value$={itemWritable(value$, index)} />
+				<PeerConditionEditItem value$={itemWritable(value$, index)} />
 				{#if $value$[0] != ComposedConditionType.Not}
-					<button type="button" class="btn btn-ghost btn-sm" on:click={() => removeItem(index)}><FaIcon icon={faTrash} /></button>
+					<button type="button" class="btn btn-ghost btn-sm" onclick={() => removeItem(index)}><FaIcon icon={faTrash} /></button>
 				{/if}
 			{/if}
 		{/each}
 		{#if $value$[0] != ComposedConditionType.Not}
-			<button type="button" class="btn btn-ghost btn-sm" on:click={addItem}><FaIcon icon={faAdd} /></button>
+			<button type="button" class="btn btn-ghost btn-sm" onclick={addItem}><FaIcon icon={faAdd} /></button>
 		{/if}
 	{/if}
 </span>

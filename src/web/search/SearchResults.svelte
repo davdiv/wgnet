@@ -17,11 +17,11 @@
 		{#if $suggestions$.length > 0}
 			{#each $suggestions$ as searchResult (searchResult)}
 				{#if searchResult.type === "peer"}
-					<ListItemLink href={`/peers/${searchResult.item.id}`} onClick={itemClick}>
+					<ListItemLink href={`/peers/${searchResult.item.id}`} onclick={itemClick}>
 						<PeerDisplay peer={searchResult.item} />
 					</ListItemLink>
 				{:else if searchResult.type === "tag"}
-					<ListItemLink href={`/tags/${searchResult.item.id}`} onClick={itemClick}>
+					<ListItemLink href={`/tags/${searchResult.item.id}`} onclick={itemClick}>
 						<FaIcon icon={faTag} />
 						<TagDisplay tag={searchResult.item} />
 					</ListItemLink>
@@ -29,7 +29,7 @@
 					<ListItemLink
 						href={searchResult.item.href}
 						title={searchResult.item.title}
-						onClick={() => {
+						onclick={() => {
 							itemClick();
 							searchResult.item.handler?.();
 						}}

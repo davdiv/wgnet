@@ -11,43 +11,41 @@
 	import { searchTagsExclude } from "../../search/search";
 	import TagDisplay from "../TagDisplay.svelte";
 
-	export let peer: PeerInfo;
+	const { peer }: { peer: PeerInfo } = $props();
 
-	$: tagsInfo = peer.tags.map((id) => $allTagsMap$[id] ?? { id });
-	$: canEdit = hasPeerAccess(peer, PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess);
+	const tagsInfo = $derived(peer.tags.map((id) => $allTagsMap$[id] ?? { id }));
+	const canEdit = $derived(hasPeerAccess(peer, PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess));
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Tags</span>
 		<span class="badge badge-primary">{peer.tags.length}</span>
 		{#if canEdit}
-			<AutoComplete
-				placeholder="Add tag"
-				class="grow"
-				selectSuggestion={(tag) => setTags(peer.id, [...peer.tags, tag.item.id], peer.name)}
-				getSuggestions={searchTagsExclude(peer.tags)}
-				let:suggestion
-			>
-				<TagDisplay tag={suggestion.item} />
+			<AutoComplete placeholder="Add tag" class="grow" selectSuggestion={(tag) => setTags(peer.id, [...peer.tags, tag.item.id], peer.name)} getSuggestions={searchTagsExclude(peer.tags)}>
+				{#snippet children({ suggestion })}
+					<TagDisplay tag={suggestion.item} />
+				{/snippet}
 			</AutoComplete>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 	{#if peer.tags.length > 0}
-		<Tags tags={tagsInfo} let:tag>
-			{#if canEdit}
-				<button
-					type="button"
-					class="btn btn-sm btn-ghost"
-					title="Remove tag from peer"
-					on:click={() =>
-						setTags(
-							peer.id,
-							peer.tags.filter((t) => t != tag.id),
-							peer.name,
-						)}><FaIcon icon={faTrash} /></button
-				>
-			{/if}
+		<Tags tags={tagsInfo}>
+			{#snippet children({ tag })}
+				{#if canEdit}
+					<button
+						type="button"
+						class="btn btn-sm btn-ghost"
+						title="Remove tag from peer"
+						onclick={() =>
+							setTags(
+								peer.id,
+								peer.tags.filter((t) => t != tag.id),
+								peer.name,
+							)}><FaIcon icon={faTrash} /></button
+					>
+				{/if}
+			{/snippet}
 		</Tags>
 	{:else}
 		<div>This peer has no tag.</div>

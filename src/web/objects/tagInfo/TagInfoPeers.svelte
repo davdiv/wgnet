@@ -11,13 +11,13 @@
 	import { searchPeersExclude } from "../../search/search";
 	import PeerDisplay from "../PeerDisplay.svelte";
 
-	export let tag: TagInfo;
+	const { tag }: { tag: TagInfo } = $props();
 
-	$: peers = $allPeersTagMap$[tag.id] ?? [];
+	const peers = $derived($allPeersTagMap$[tag.id] ?? []);
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Peers</span>
 		<span class="badge badge-primary">{peers.length}</span>
 		{#if canHavePeerAccess(PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess)}
@@ -31,26 +31,29 @@
 					peers.map(({ id }) => id),
 					PeerAccess.WriteTags,
 				)}
-				let:suggestion
 			>
-				<PeerDisplay peer={suggestion.item} />
+				{#snippet children({ suggestion })}
+					<PeerDisplay peer={suggestion.item} />
+				{/snippet}
 			</AutoComplete>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 	{#if peers.length > 0}
-		<Peers {peers} let:peer>
-			{#if hasPeerAccess(peer, PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess)}
-				<button
-					class="btn btn-sm btn-ghost"
-					title="Remove tag from peer"
-					on:click={() =>
-						setTags(
-							peer.id,
-							peer.tags.filter((t) => t != tag.id),
-							peer.name,
-						)}><FaIcon icon={faTrash} /></button
-				>
-			{/if}
+		<Peers {peers}>
+			{#snippet children({ peer })}
+				{#if hasPeerAccess(peer, PeerAccess.WriteTags, $userInfo$.wgnet?.peerAccess)}
+					<button
+						class="btn btn-sm btn-ghost"
+						title="Remove tag from peer"
+						onclick={() =>
+							setTags(
+								peer.id,
+								peer.tags.filter((t) => t != tag.id),
+								peer.name,
+							)}><FaIcon icon={faTrash} /></button
+					>
+				{/if}
+			{/snippet}
 		</Peers>
 	{:else}
 		<div>This tag is not attached to any peer.</div>

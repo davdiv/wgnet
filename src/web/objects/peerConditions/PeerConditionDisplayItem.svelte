@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { ComposedConditionType, isTagCondition, isPeerIdCondition, type PeerCondition } from "../../../common/peerConditions/evaluate";
-	import Tag from "../../Tag.svelte";
+	import { ComposedConditionType, isPeerIdCondition, isTagCondition, type PeerCondition } from "../../../common/peerConditions/evaluate";
 	import Peer from "../../Peer.svelte";
+	import Tag from "../../Tag.svelte";
+	import PeerConditionDisplayItem from "./PeerConditionDisplayItem.svelte";
 
-	export let value: PeerCondition;
+	const { value }: { value: PeerCondition } = $props();
 </script>
 
 {#if isTagCondition(value)}
@@ -22,7 +23,7 @@
 				{#if i > 1}
 					<span class="mx-1">{value[0] === ComposedConditionType.And ? "AND" : "OR"}</span>
 				{/if}
-				<svelte:self value={operand} />
+				<PeerConditionDisplayItem value={operand as PeerCondition} />
 			{/if}
 		{/each}
 	</span>

@@ -1,12 +1,18 @@
 <script lang="ts">
 	import Route from "./Route.svelte";
 	import Lazy from "./Lazy.svelte";
-	export let component: any;
-	export let args: any = {};
-	export let prefix = false;
-	export let path: string;
+	interface Props {
+		component: any;
+		args?: any;
+		prefix?: boolean;
+		path: string;
+	}
+
+	const { component, args = {}, prefix = false, path }: Props = $props();
 </script>
 
-<Route {path} {prefix} let:match>
-	<Lazy {component} args={{ ...args, match }} />
+<Route {path} {prefix}>
+	{#snippet children({ match })}
+		<Lazy {component} args={{ ...args, match }} />
+	{/snippet}
 </Route>

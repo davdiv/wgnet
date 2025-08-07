@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { faServer } from "@fortawesome/free-solid-svg-icons";
+	import type { HTMLAttributes } from "svelte/elements";
 	import { allPeersMap$ } from "./data";
 	import FaIcon from "./generic/FaIcon.svelte";
 
-	export let id: number;
+	const { id, ...rest }: { id: number } & Omit<HTMLAttributes<HTMLDivElement>, "id"> = $props();
 
-	$: peerInfo = $allPeersMap$[id];
+	const peerInfo = $derived($allPeersMap$[id]);
 </script>
 
-<div title={peerInfo?.description} {...$$restProps} class="badge gap-2 {$$restProps.class}">
+<div {...rest} title={peerInfo?.description} class={["badge gap-2", rest.class]}>
 	<FaIcon icon={faServer} />
 	<span>
 		{#if peerInfo}

@@ -29,7 +29,7 @@
 {#if $showPopup$}
 	<div use:hasFocusDirective use:navDirective class="fixed left-0 top-0 bottom-0 z-10 mt-16 bg-base-100 flex flex-col justify-items-stretch w-full overflow-y-auto">
 		{#each urls as url (url)}
-			<ListItemLink href={url} onClick={closePopup}>
+			<ListItemLink href={url} onclick={closePopup}>
 				{#if url.startsWith("/peers/")}
 					<Peer id={+url.split("/")[2]} />
 				{:else if url.startsWith("/tags/")}

@@ -1,23 +1,33 @@
-<script lang="ts">
+<script lang="ts" generics="Item">
+	import type { Snippet } from "svelte";
+	import type { HTMLInputAttributes } from "svelte/elements";
 	import { createAutoCompleteLogic } from "./autoCompleteLogic";
 
-	type Item = $$Generic; // eslint-disable-line no-undef
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	type $$Slots = {
-		default: { suggestion: Item };
-	};
+	const {
+		getSuggestions,
+		selectSuggestion,
+		inputClass = "",
+		class: divClass,
+		children,
+		...restProps
+	}: {
+		getSuggestions: (trimmedText: string) => Item[];
+		selectSuggestion: (suggestion: Item) => void;
+		children: Snippet<[{ suggestion: Item }]>;
+		inputClass?: string;
+	} & Omit<HTMLInputAttributes, "children"> = $props();
+
 	const { closeSuggestions, getSuggestions$, inputDirective, hasFocusDirective, navManagerDirective, text$, showSuggestions$, suggestions$ } = createAutoCompleteLogic<Item>();
 
-	export let getSuggestions: (trimmedText: string) => Item[];
-	export let selectSuggestion: (suggestion: Item) => void;
-	export let inputClass = "";
-
-	$: $getSuggestions$ = getSuggestions;
+	$getSuggestions$ = getSuggestions;
+	$effect(() => {
+		$getSuggestions$ = getSuggestions;
+	});
 </script>
 
-<div class="dropdown dropdown-bottom {$$restProps.class ?? ''}">
+<div class={["dropdown dropdown-bottom", divClass]}>
 	<div class="input input-ghost w-full flex gap-2 {inputClass}">
-		<input {...$$restProps} class="w-full" bind:value={$text$} use:hasFocusDirective use:navManagerDirective use:inputDirective />
+		<input {...restProps} class="w-full" bind:value={$text$} use:hasFocusDirective use:navManagerDirective use:inputDirective />
 	</div>
 	{#if $showSuggestions$}
 		<ul class="dropdown-content z-10 menu my-2 border p-2 shadow bg-base-100 rounded-box w-full" use:hasFocusDirective use:navManagerDirective>
@@ -26,11 +36,11 @@
 					<li>
 						<button
 							type="button"
-							on:click={() => {
+							onclick={() => {
 								closeSuggestions();
 								$text$ = "";
 								selectSuggestion(suggestion);
-							}}><slot {suggestion}>{suggestion}</slot></button
+							}}>{@render children({ suggestion })}</button
 						>
 					</li>
 				{/each}

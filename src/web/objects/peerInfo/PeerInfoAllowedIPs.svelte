@@ -41,7 +41,7 @@
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Allowed IPs</span>
 		<span class="badge badge-primary">{peer.allowedIps.length}</span>
 		{#if canEdit}
@@ -52,7 +52,7 @@
 				</label>
 			</FormContainer>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 	{#if peer.allowedIps.length > 0}
 		<div class="flex flex-col">
 			{#each peer.allowedIps as allowedIp (`${allowedIp.ip}/${allowedIp.netmask}`)}

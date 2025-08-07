@@ -1,9 +1,9 @@
 <script lang="ts">
 	import PeerConditionItem from "./PeerConditionDisplayItem.svelte";
 
-	export let peerCondition: string | null;
+	const { peerCondition }: { peerCondition: string | null } = $props();
 
-	$: parsedPeerCondition = peerCondition ? JSON.parse(peerCondition) : null;
+	const parsedPeerCondition = $derived(peerCondition ? JSON.parse(peerCondition) : null);
 </script>
 
 {#if parsedPeerCondition}

@@ -38,9 +38,9 @@
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Basic properties</span>
-	</svelte:fragment>
+	{/snippet}
 	<FormContainer {form}>
 		<label class={["input w-full flex items-center gap-2", fieldClass(form, "name")]}>
 			<span class="font-bold flex-none">Name</span>

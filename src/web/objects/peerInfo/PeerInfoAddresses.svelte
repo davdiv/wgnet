@@ -40,7 +40,7 @@
 </script>
 
 <Collapse>
-	<svelte:fragment slot="title">
+	{#snippet title()}
 		<span class="flex-none">Addresses</span>
 		<span class="badge badge-primary">{peer.addresses.length}</span>
 		{#if canEdit}
@@ -51,7 +51,7 @@
 				</label>
 			</FormContainer>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 	{#if peer.addresses.length > 0}
 		<div class="flex flex-col">
 			{#each peer.addresses as address (address.ip)}
