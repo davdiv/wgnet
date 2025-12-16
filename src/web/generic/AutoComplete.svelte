@@ -19,10 +19,11 @@
 
 	const { closeSuggestions, getSuggestions$, inputDirective, hasFocusDirective, navManagerDirective, text$, showSuggestions$, suggestions$ } = createAutoCompleteLogic<Item>();
 
-	$getSuggestions$ = getSuggestions;
-	$effect(() => {
+	const updateGetSuggestions = () => {
 		$getSuggestions$ = getSuggestions;
-	});
+	};
+	updateGetSuggestions();
+	$effect.pre(updateGetSuggestions);
 </script>
 
 <div class={["dropdown dropdown-bottom", divClass]}>

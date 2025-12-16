@@ -12,10 +12,11 @@
 
 	const { matchParams$, queryForEdition$, simplifiedQuery$, queryValidForSearch$, searchResult$ } = createSearchLogic();
 
-	$matchParams$ = match.params as any;
-	$effect(() => {
+	const updateMatchParams = () => {
 		$matchParams$ = match.params as any;
-	});
+	};
+	updateMatchParams();
+	$effect.pre(updateMatchParams);
 </script>
 
 <div class="flex flex-col p-3 gap-2">

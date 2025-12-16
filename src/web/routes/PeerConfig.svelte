@@ -9,10 +9,11 @@
 
 	const { matchParams$, format$, formattedConfig$, configURL$, configFileName$, showConfig$ } = createPeerConfigLogic();
 
-	$matchParams$ = match.params as any;
-	$effect(() => {
+	const updateMatchParams = () => {
 		$matchParams$ = match.params as any;
-	});
+	};
+	updateMatchParams();
+	$effect.pre(updateMatchParams);
 
 	const warningIcon = "\u26A0";
 </script>
