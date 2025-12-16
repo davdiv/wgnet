@@ -4,7 +4,7 @@
 	import { bindType } from "./utils";
 
 	const { value$ }: { value$: WritableSignal<PeerCondition> } = $props();
-	const type$ = bindType(value$);
+	const type$ = $derived(bindType(value$));
 </script>
 
 <select bind:value={$type$} class="select select-ghost select-sm m-2">
